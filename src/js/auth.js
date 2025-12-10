@@ -8,6 +8,9 @@
 
 let currentUser = null;
 let currentPassword = '';
+let allNames = []; // Store all names for autocomplete
+let selectedName = ''; // Store selected name
+let activeIndex = -1; // Track active suggestion
 
 /**
  * Load student names from server
@@ -17,39 +20,191 @@ async function loadNames() {
     const names = await callAPIGet('getNames');
     onNamesLoaded(names);
   } catch (error) {
-    const select = document.getElementById('nameSelect');
-    select.innerHTML = '<option value="">Error loading names - check deployment</option>';
+    const input = document.getElementById('nameInput');
+    input.placeholder = 'Error loading names - check deployment';
     showNotice('Cannot load student names. Apps Script deployment may not be accessible. Error: ' + error.message, 'error');
     console.error('Load names error:', error);
   }
 }
 
 /**
- * Populate names dropdown
+ * Initialize autocomplete with names
  * @param {Array} names - Array of {name, row} objects
  */
 function onNamesLoaded(names) {
-  const select = document.getElementById('nameSelect');
-  select.innerHTML = '<option value="">-- Select your name --</option>';
+  allNames = names || [];
+  const input = document.getElementById('nameInput');
+  input.placeholder = 'Type your name...';
   
-  (names || []).forEach(item => {
-    const option = document.createElement('option');
-    option.value = item.name;
-    option.textContent = item.name;
-    option.dataset.row = item.row;
-    select.appendChild(option);
+  // Set up autocomplete event listeners
+  initAutocomplete();
+}
+
+/**
+ * Initialize autocomplete functionality
+ */
+function initAutocomplete() {
+  const input = document.getElementById('nameInput');
+  const dropdown = document.getElementById('nameDropdown');
+  
+  // Input event - filter as user types
+  input.addEventListener('input', function() {
+    const query = this.value.trim();
+    selectedName = ''; // Reset selection when typing
+    activeIndex = -1;
+    
+    if (query.length === 0) {
+      dropdown.classList.remove('show');
+      return;
+    }
+    
+    filterAndShowSuggestions(query);
   });
+  
+  // Focus event - show all names if input is empty
+  input.addEventListener('focus', function() {
+    if (this.value.trim().length === 0) {
+      showAllSuggestions();
+    }
+  });
+  
+  // Keyboard navigation
+  input.addEventListener('keydown', function(e) {
+    const items = dropdown.querySelectorAll('.autocomplete-item');
+    
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIndex = Math.min(activeIndex + 1, items.length - 1);
+      updateActiveItem(items);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIndex = Math.max(activeIndex - 1, -1);
+      updateActiveItem(items);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (activeIndex >= 0 && items[activeIndex]) {
+        selectName(items[activeIndex].textContent);
+      }
+    } else if (e.key === 'Escape') {
+      dropdown.classList.remove('show');
+    }
+  });
+  
+  // Click outside to close
+  document.addEventListener('click', function(e) {
+    if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.remove('show');
+    }
+  });
+}
+
+/**
+ * Filter and show name suggestions
+ */
+function filterAndShowSuggestions(query) {
+  const dropdown = document.getElementById('nameDropdown');
+  const lowerQuery = query.toLowerCase();
+  
+  const matches = allNames.filter(item => 
+    item.name.toLowerCase().includes(lowerQuery)
+  );
+  
+  if (matches.length === 0) {
+    dropdown.innerHTML = '<div class="autocomplete-no-results">No names found</div>';
+    dropdown.classList.add('show');
+    return;
+  }
+  
+  dropdown.innerHTML = '';
+  matches.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'autocomplete-item';
+    div.textContent = item.name;
+    div.dataset.row = item.row;
+    
+    // Highlight matching text
+    const regex = new RegExp(`(${query})`, 'gi');
+    div.innerHTML = item.name.replace(regex, '<span class="autocomplete-highlight">$1</span>');
+    
+    div.addEventListener('click', function() {
+      selectName(item.name);
+    });
+    
+    dropdown.appendChild(div);
+  });
+  
+  dropdown.classList.add('show');
+  activeIndex = -1;
+}
+
+/**
+ * Show all available names
+ */
+function showAllSuggestions() {
+  const dropdown = document.getElementById('nameDropdown');
+  dropdown.innerHTML = '';
+  
+  allNames.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'autocomplete-item';
+    div.textContent = item.name;
+    div.dataset.row = item.row;
+    
+    div.addEventListener('click', function() {
+      selectName(item.name);
+    });
+    
+    dropdown.appendChild(div);
+  });
+  
+  dropdown.classList.add('show');
+}
+
+/**
+ * Update active/highlighted item in dropdown
+ */
+function updateActiveItem(items) {
+  items.forEach((item, index) => {
+    if (index === activeIndex) {
+      item.classList.add('active');
+      item.scrollIntoView({ block: 'nearest' });
+    } else {
+      item.classList.remove('active');
+    }
+  });
+}
+
+/**
+ * Select a name from suggestions
+ */
+function selectName(name) {
+  const input = document.getElementById('nameInput');
+  const dropdown = document.getElementById('nameDropdown');
+  
+  input.value = name;
+  selectedName = name;
+  dropdown.classList.remove('show');
+  
+  // Focus password field
+  document.getElementById('passwordField').focus();
 }
 
 /**
  * Handle login button click
  */
 async function onLogin() {
-  const name = document.getElementById('nameSelect').value;
+  const name = selectedName || document.getElementById('nameInput').value.trim();
   const password = document.getElementById('passwordField').value;
   
   if (!name || !password) {
-    showNotice('Please select your name and enter password', 'error');
+    showNotice('Please enter your name and password', 'error');
+    return;
+  }
+  
+  // Verify name exists in list
+  const nameExists = allNames.some(item => item.name === name);
+  if (!nameExists) {
+    showNotice('Name not found. Please select from suggestions.', 'error');
     return;
   }
 

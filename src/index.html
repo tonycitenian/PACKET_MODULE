@@ -40,10 +40,11 @@
       <h2 class="login-title">Student Login</h2>
       <div class="login-table">
         <div class="form-group">
-          <label for="nameSelect">Select Your Name</label>
-          <select id="nameSelect">
-            <option value="">Loading names...</option>
-          </select>
+          <label for="nameInput">Search Your Name</label>
+          <div class="autocomplete-wrapper">
+            <input id="nameInput" type="text" placeholder="Type your name..." autocomplete="off">
+            <div class="autocomplete-dropdown" id="nameDropdown"></div>
+          </div>
         </div>
         <div class="form-group">
           <label for="passwordField">Password</label>
