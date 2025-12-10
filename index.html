@@ -413,9 +413,6 @@
       try {
         const response = await fetch(API_URL, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
           body: JSON.stringify({
             action: action,
             ...params
@@ -439,7 +436,9 @@
 
     async function callAPIGet(action) {
       try {
-        const response = await fetch(`${API_URL}?action=${action}`);
+        const response = await fetch(`${API_URL}?action=${action}`, {
+          method: 'GET'
+        });
         
         if (!response.ok) {
           throw new Error(`Server returned ${response.status}: ${response.statusText}`);
