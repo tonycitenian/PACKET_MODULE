@@ -62,7 +62,24 @@ function createModal() {
   fontControl.appendChild(label);
   fontControl.appendChild(resetBtn);
 
+  // Create Save/Cancel buttons container
+  const btns = document.createElement('div');
+  btns.style.display = 'flex';
+  btns.style.gap = '8px';
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'modal-save';
+  saveBtn.textContent = 'Save';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'modal-cancel';
+  cancelBtn.textContent = 'Cancel';
+
+  btns.appendChild(saveBtn);
+  btns.appendChild(cancelBtn);
+
   controls.appendChild(fontControl);
+  controls.appendChild(btns); // Add buttons to header controls
   header.appendChild(title);
   header.appendChild(controls);
 
@@ -78,22 +95,8 @@ function createModal() {
   wc.style.color = '#cbd5e1';
   wc.textContent = '0 / ' + MAX_WORDS + ' words';
 
-  const btns = document.createElement('div');
-  btns.style.display = 'flex';
-  btns.style.gap = '8px';
-
-  const saveBtn = document.createElement('button');
-  saveBtn.className = 'modal-save';
-  saveBtn.textContent = 'Save';
-
-  const cancelBtn = document.createElement('button');
-  cancelBtn.className = 'modal-cancel';
-  cancelBtn.textContent = 'Cancel';
-
-  btns.appendChild(saveBtn);
-  btns.appendChild(cancelBtn);
   footer.appendChild(wc);
-  footer.appendChild(btns);
+  // Buttons removed from footer - now in header
 
   modal.appendChild(header);
   modal.appendChild(textarea);
