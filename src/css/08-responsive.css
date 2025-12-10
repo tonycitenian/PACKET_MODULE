@@ -1,0 +1,94 @@
+/* ============================================
+   Responsive Media Queries
+   ============================================ */
+
+@media (max-width: 1024px) {
+  html {
+    font-size: 20px;
+  }
+
+  body {
+    padding: 20px;
+  }
+
+  .login-card {
+    padding: var(--spacing-xl);
+  }
+
+  .login-title {
+    font-size: 32px;
+  }
+
+  .form-group label {
+    font-size: 100%;
+  }
+
+  select,
+  input[type="password"],
+  .btn,
+  .notice {
+    font-size: 100%;
+  }
+
+  .digital-clock {
+    min-width: 200px;
+    height: 56px;
+    line-height: 56px;
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    padding: 15px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    text-align: center;
+  }
+
+  .progress-header {
+    flex-direction: column;
+  }
+
+  .progress-stats {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    width: 100%;
+  }
+
+  .table-container {
+    overflow-x: scroll;
+  }
+
+  .login-title {
+    font-size: 28px;
+  }
+
+  .form-group label {
+    font-size: 100%;
+  }
+
+  select,
+  input[type="password"],
+  .btn,
+  .notice {
+    font-size: 100%;
+  }
+
+  .btn-small {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.6rem;
+  }
+
+  .digital-clock {
+    min-width: auto;
+    width: 100%;
+  }
+}

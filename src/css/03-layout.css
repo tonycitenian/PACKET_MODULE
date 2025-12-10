@@ -1,0 +1,54 @@
+/* ============================================
+   Layout Components
+   ============================================ */
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg);
+  background: var(--bg-overlay);
+  border-radius: var(--radius-md);
+}
+
+.title {
+  font-weight: 900;
+  font-size: 1.8rem;
+  color: var(--text-white);
+}
+
+.student-name {
+  font-weight: 800;
+  margin-top: var(--spacing-sm);
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.ver {
+  font-weight: 800;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.8rem;
+}
+
+.controls {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+/* Clock */
+.digital-clock {
+  font-weight: 800;
+  font-size: 28px;
+  color: var(--clock-color);
+  height: 70px;
+  line-height: 70px;
+  padding: 0 12px;
+  background: var(--bg-overlay);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  min-width: 260px;
+}

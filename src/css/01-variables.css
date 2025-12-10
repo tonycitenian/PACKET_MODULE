@@ -1,0 +1,60 @@
+/* ============================================
+   CSS Variables & Theme Configuration
+   ============================================ */
+
+:root {
+  /* Color Palette */
+  --primary-color: #4f46e5;
+  --secondary-color: #8b5cf6;
+  --success-color: #10b981;
+  --success-dark: #059669;
+  --error-color: #ef4444;
+  --error-dark: #dc2626;
+  --warning-light: #fef3c7;
+  --warning-dark: #fde68a;
+  
+  /* Backgrounds */
+  --bg-dark-1: #071428;
+  --bg-dark-2: #081428;
+  --bg-overlay: rgba(255, 255, 255, 0.02);
+  --bg-overlay-hover: rgba(255, 255, 255, 0.05);
+  
+  /* Text Colors */
+  --text-primary: #e6eef8;
+  --text-secondary: #a5b4fc;
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --text-ultra-muted: rgba(255, 255, 255, 0.4);
+  --text-white: #fff;
+  
+  /* Clock */
+  --clock-color: #ef4444;
+  
+  /* Typography */
+  --font-base-size: 25px;
+  --font-family: Inter, system-ui, "Segoe UI", Roboto, Helvetica, Arial;
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 2.5rem;
+  --spacing-3xl: 3rem;
+  
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-full: 999px;
+  
+  /* Shadows */
+  --shadow-sm: 0 4px 12px rgba(16, 185, 129, 0.4);
+  --shadow-md: 0 20px 40px rgba(2, 6, 23, 0.4);
+  --shadow-lg: 0 30px 80px rgba(2, 6, 23, 0.6);
+  
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  
+  /* Z-index */
+  --z-modal: 9999;
+}

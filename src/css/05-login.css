@@ -1,0 +1,62 @@
+/* ============================================
+   Login Card & Form Styles
+   ============================================ */
+
+.login-card {
+  background: var(--bg-overlay);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-3xl);
+  box-shadow: var(--shadow-lg);
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.login-title {
+  font-size: 40px;
+  font-weight: 900;
+  margin-bottom: var(--spacing-xl);
+  color: var(--text-white);
+  text-align: center;
+}
+
+.login-table {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-xl);
+}
+
+.form-group {
+  margin: 0;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.8rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 100%;
+}
+
+select,
+input[type="password"],
+input[type="text"] {
+  width: 100%;
+  font-size: 100%;
+  padding: 0.6rem 1.0rem;
+  min-height: 40px;
+  height: auto;
+  border-radius: var(--radius-md);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-overlay-hover);
+  color: var(--text-white);
+  font-family: inherit;
+  box-sizing: border-box;
+  appearance: none;
+}
+
+select option {
+  background: #0b1220;
+  color: var(--text-white);
+  font-size: 100%;
+}

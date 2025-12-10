@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Packet Module — v114 (GitHub Edition)</title>
+  <style>
+/* 01-variables.css */
+/* ============================================
+   CSS Variables & Theme Configuration
+   ============================================ */
+
+:root {
+  /* Color Palette */
+  --primary-color: #4f46e5;
+  --secondary-color: #8b5cf6;
+  --success-color: #10b981;
+  --success-dark: #059669;
+  --error-color: #ef4444;
+  --error-dark: #dc2626;
+  --warning-light: #fef3c7;
+  --warning-dark: #fde68a;
+  
+  /* Backgrounds */
+  --bg-dark-1: #071428;
+  --bg-dark-2: #081428;
+  --bg-overlay: rgba(255, 255, 255, 0.02);
+  --bg-overlay-hover: rgba(255, 255, 255, 0.05);
+  
+  /* Text Colors */
+  --text-primary: #e6eef8;
+  --text-secondary: #a5b4fc;
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --text-ultra-muted: rgba(255, 255, 255, 0.4);
+  --text-white: #fff;
+  
+  /* Clock */
+  --clock-color: #ef4444;
+  
+  /* Typography */
+  --font-base-size: 25px;
+  --font-family: Inter, system-ui, "Segoe UI", Roboto, Helvetica, Arial;
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 2.5rem;
+  --spacing-3xl: 3rem;
+  
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-full: 999px;
+  
+  /* Shadows */
+  --shadow-sm: 0 4px 12px rgba(16, 185, 129, 0.4);
+  --shadow-md: 0 20px 40px rgba(2, 6, 23, 0.4);
+  --shadow-lg: 0 30px 80px rgba(2, 6, 23, 0.6);
+  
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  
+  /* Z-index */
+  --z-modal: 9999;
+}
+
+
+/* 02-base.css */
+/* ============================================
+   Base Styles & Typography
+   ============================================ */
+
+html {
+  font-size: var(--font-base-size);
+}
+
+body {
+  margin: 0;
+  padding: 40px;
+  font-family: var(--font-family);
+  background: linear-gradient(180deg, var(--bg-dark-1), var(--bg-dark-2));
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+.wrap {
+  max-width: 1800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+
+/* 03-layout.css */
+/* ============================================
+   Layout Components
+   ============================================ */
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg);
+  background: var(--bg-overlay);
+  border-radius: var(--radius-md);
+}
+
+.title {
+  font-weight: 900;
+  font-size: 1.8rem;
+  color: var(--text-white);
+}
+
+.student-name {
+  font-weight: 800;
+  margin-top: var(--spacing-sm);
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.ver {
+  font-weight: 800;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.8rem;
+}
+
+.controls {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+/* Clock */
+.digital-clock {
+  font-weight: 800;
+  font-size: 28px;
+  color: var(--clock-color);
+  height: 70px;
+  line-height: 70px;
+  padding: 0 12px;
+  background: var(--bg-overlay);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  min-width: 260px;
+}
+
+
+/* 04-components.css */
+/* ============================================
+   Reusable Components (Buttons, Badges, Notices)
+   ============================================ */
+
+/* Buttons */
+.btn {
+  font-weight: 800;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  color: var(--text-white);
+  border: none;
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 25px;
+  width: 100%;
+  margin-top: var(--spacing-lg);
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.btn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn.ghost {
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  padding: 0.6rem 1.2rem;
+  width: auto;
+  font-size: 0.8rem;
+}
+
+.btn-small {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 0.7rem;
+  font-weight: 800;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-action {
+  background: linear-gradient(90deg, var(--success-color), var(--success-dark));
+  color: var(--text-white);
+}
+
+.btn-action:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-disabled {
+  background: #374151;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-full);
+  font-weight: 800;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-done {
+  background: linear-gradient(90deg, var(--success-color), var(--success-dark));
+  color: var(--text-white);
+}
+
+.status-pending {
+  background: linear-gradient(90deg, var(--warning-light), var(--warning-dark));
+  color: #92400e;
+}
+
+.status-locked {
+  background: linear-gradient(90deg, var(--error-color), var(--error-dark));
+  color: var(--text-white);
+}
+
+.status-empty {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+}
+
+.status-na {
+  background: linear-gradient(90deg, #6b7280, #4b5563);
+  color: var(--text-white);
+}
+
+/* Notices */
+.notice {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: 25px;
+  text-align: center;
+}
+
+.notice.error {
+  background: rgba(239, 68, 68, 0.1);
+  color: #fca5a5;
+  border: 2px solid rgba(239, 68, 68, 0.3);
+}
+
+.notice.success {
+  background: rgba(16, 185, 129, 0.1);
+  color: #6ee7b7;
+  border: 2px solid rgba(16, 185, 129, 0.3);
+}
+
+
+/* 05-login.css */
+/* ============================================
+   Login Card & Form Styles
+   ============================================ */
+
+.login-card {
+  background: var(--bg-overlay);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-3xl);
+  box-shadow: var(--shadow-lg);
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.login-title {
+  font-size: 40px;
+  font-weight: 900;
+  margin-bottom: var(--spacing-xl);
+  color: var(--text-white);
+  text-align: center;
+}
+
+.login-table {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-xl);
+}
+
+.form-group {
+  margin: 0;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.8rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 100%;
+}
+
+select,
+input[type="password"],
+input[type="text"] {
+  width: 100%;
+  font-size: 100%;
+  padding: 0.6rem 1.0rem;
+  min-height: 40px;
+  height: auto;
+  border-radius: var(--radius-md);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-overlay-hover);
+  color: var(--text-white);
+  font-family: inherit;
+  box-sizing: border-box;
+  appearance: none;
+}
+
+select option {
+  background: #0b1220;
+  color: var(--text-white);
+  font-size: 100%;
+}
+
+
+/* 06-progress.css */
+/* ============================================
+   Progress Card & Table Styles
+   ============================================ */
+
+.progress-card {
+  background: var(--bg-overlay);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-2xl);
+  box-shadow: var(--shadow-lg);
+  display: none;
+}
+
+.progress-card.active {
+  display: block;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-2xl);
+  flex-wrap: wrap;
+  gap: var(--spacing-lg);
+}
+
+.progress-stats {
+  display: flex;
+  gap: var(--spacing-2xl);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  margin-bottom: 0.3rem;
+  font-weight: 700;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--text-white);
+}
+
+.progress-info {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--text-white);
+  font-weight: 900;
+}
+
+.progress-subtitle {
+  margin-top: 0.3rem;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.table-container {
+  overflow-x: auto;
+  margin-top: var(--spacing-lg);
+}
+
+.progress-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 var(--spacing-sm);
+}
+
+.progress-table thead th {
+  text-align: left;
+  padding: var(--spacing-md);
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.progress-table tbody tr {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+  transition: all var(--transition-fast);
+}
+
+.progress-table tbody tr:hover {
+  background: linear-gradient(90deg, rgba(79, 70, 229, 0.15), rgba(139, 92, 246, 0.08));
+  transform: translateX(4px);
+}
+
+.progress-table tbody td {
+  padding: var(--spacing-md);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.8rem;
+  vertical-align: top;
+}
+
+.progress-table tbody td:first-child {
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  border-top-left-radius: var(--radius-md);
+  border-bottom-left-radius: var(--radius-md);
+}
+
+.progress-table tbody td:last-child {
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-top-right-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+  text-align: center;
+}
+
+.module-cell {
+  font-weight: 900;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.activity-cell {
+  font-weight: 700;
+  color: var(--text-white);
+  font-size: 0.8rem;
+}
+
+.datetime-cell {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.datetime-pending {
+  color: var(--text-ultra-muted);
+  font-style: italic;
+}
+
+.updating-row {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.input-textarea {
+  width: 100%;
+  min-height: 84px;
+  max-height: 200px;
+  padding: 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-overlay);
+  color: var(--text-white);
+  resize: vertical;
+  box-sizing: border-box;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.word-count {
+  margin-top: 0.25rem;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-align: right;
+}
+
+
+/* 07-modal.css */
+/* ============================================
+   Modal Editor Styles (Fullscreen)
+   ============================================ */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.75);
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  z-index: var(--z-modal);
+  padding: 0;
+  backdrop-filter: blur(6px);
+}
+
+.modal {
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+  border-radius: 0;
+  padding: 20px;
+  box-shadow: none;
+  color: var(--text-white);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: 8px 4px;
+}
+
+.modal-title {
+  font-weight: 900;
+  font-size: 1.1rem;
+  color: var(--text-white);
+}
+
+.modal-controls {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+/* Font Control UI */
+.font-control {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+  color: #cbd5e1;
+  font-weight: 700;
+  background: var(--bg-overlay);
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.font-control button {
+  background: transparent;
+  color: var(--text-white);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.font-control input[type="range"] {
+  width: 160px;
+  accent-color: #7c3aed;
+}
+
+.font-size-label {
+  min-width: 44px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.modal-textarea {
+  width: 100%;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text-white);
+  font-size: 18px;
+  resize: none;
+  box-sizing: border-box;
+  font-family: inherit;
+  flex: 1 1 auto;
+  overflow: auto;
+  line-height: 1.4;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0;
+  gap: 12px;
+  padding: 8px 4px;
+  flex-wrap: wrap;
+}
+
+.modal-save {
+  background: linear-gradient(90deg, var(--success-color), var(--success-dark));
+  color: var(--text-white);
+  padding: 0.8rem 1.2rem;
+  border-radius: var(--radius-sm);
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+}
+
+.modal-cancel {
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  padding: 0.6rem var(--spacing-md);
+  border-radius: var(--radius-sm);
+  color: var(--text-white);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+
+/* 08-responsive.css */
+/* ============================================
+   Responsive Media Queries
+   ============================================ */
+
+@media (max-width: 1024px) {
+  html {
+    font-size: 20px;
+  }
+
+  body {
+    padding: 20px;
+  }
+
+  .login-card {
+    padding: var(--spacing-xl);
+  }
+
+  .login-title {
+    font-size: 32px;
+  }
+
+  .form-group label {
+    font-size: 100%;
+  }
+
+  select,
+  input[type="password"],
+  .btn,
+  .notice {
+    font-size: 100%;
+  }
+
+  .digital-clock {
+    min-width: 200px;
+    height: 56px;
+    line-height: 56px;
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    padding: 15px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    text-align: center;
+  }
+
+  .progress-header {
+    flex-direction: column;
+  }
+
+  .progress-stats {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    width: 100%;
+  }
+
+  .table-container {
+    overflow-x: scroll;
+  }
+
+  .login-title {
+    font-size: 28px;
+  }
+
+  .form-group label {
+    font-size: 100%;
+  }
+
+  select,
+  input[type="password"],
+  .btn,
+  .notice {
+    font-size: 100%;
+  }
+
+  .btn-small {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.6rem;
+  }
+
+  .digital-clock {
+    min-width: auto;
+    width: 100%;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Header -->
+    <div class="header">
+      <div>
+        <div class="title">📚 Packet Module</div>
+        <div class="student-name" id="headerStudentName"></div>
+      </div>
+      <div class="controls">
+        <div class="digital-clock" id="digitalClock">--:--:--</div>
+        <div class="ver">v114</div>
+        <button class="btn ghost" id="logoutBtn" onclick="onLogout()" style="display:none">Logout</button>
+      </div>
+    </div>
+
+    <!-- Login Card -->
+    <div class="login-card" id="loginCard">
+      <h2 class="login-title">Student Login</h2>
+      <div class="login-table">
+        <div class="form-group">
+          <label for="nameSelect">Select Your Name</label>
+          <select id="nameSelect">
+            <option value="">Loading names...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="passwordField">Password</label>
+          <input id="passwordField" type="password" placeholder="Enter your password">
+        </div>
+        <button class="btn" id="loginBtn" onclick="onLogin()">Login</button>
+      </div>
+      <div id="authNotice"></div>
+    </div>
+
+    <!-- Progress Table -->
+    <div class="progress-card" id="progressCard">
+      <div class="progress-header">
+        <div>
+          <h2 class="progress-info">Your Progress</h2>
+          <p class="progress-subtitle">MODULE, ACTIVITY | STATUS | SUBMISSION | DATE UPDATED | ACTION</p>
+        </div>
+        <div class="progress-stats">
+          <div class="stat-item">
+            <span class="stat-label">COMPLETED</span>
+            <span class="stat-value" id="statCompleted">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">PENDING</span>
+            <span class="stat-value" id="statPending">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">TOTAL</span>
+            <span class="stat-value" id="statTotal">140</span>
+          </div>
+        </div>
+        <button class="btn ghost" onclick="refreshProgress()">Refresh</button>
+      </div>
+
+      <div class="table-container">
+        <table class="progress-table">
+          <thead>
+            <tr>
+              <th>MODULE</th>
+              <th>ACTIVITY</th>
+              <th>STATUS</th>
+              <th>SUBMISSION</th>
+              <th>DATE AND TIME</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody id="progressTableBody">
+            <!-- Rows will be populated here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+// config.js
+/**
+ * ============================================
+ * APPLICATION CONFIGURATION
+ * ============================================
+ * 
+ * All constants and configuration values
+ */
+
+// API Configuration
+// ⚠️ IMPORTANT: Replace with your actual Google Apps Script Web App URL
+const API_URL = 'https://script.google.com/macros/s/AKfycby9H7lhO-l47m83X_wkx7kWjAhtmN3opfAN8kFBGkqwWMVEWwaMYTBpgGKmT4daljWL/exec';
+
+// Application Constants
+const MAX_WORDS = 1000;
+const DEFAULT_FONT_PX = 18;
+const FONT_STORAGE_KEY = 'packet_modal_font_size';
+const CLOCK_UPDATE_INTERVAL = 1000; // milliseconds
+
+// Timezone Configuration
+const TIMEZONE = 'Asia/Manila';
+
+
+// api.js
+/**
+ * ============================================
+ * API COMMUNICATION LAYER
+ * ============================================
+ * 
+ * Handles all communication with Google Apps Script backend
+ */
+
+/**
+ * Make POST API call to backend
+ * @param {string} action - Action to perform
+ * @param {object} params - Parameters to send
+ * @returns {Promise} Response data
+ */
+async function callAPI(action, params = {}) {
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: action,
+        ...params
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('API call failed:', error);
+    
+    // Provide detailed error information
+    if (error.message.includes('Failed to fetch')) {
+      throw new Error('Cannot connect to server. Please check:\n1. Apps Script deployment is active\n2. Deployment access is set to "Anyone"\n3. You have internet connection');
+    }
+    throw error;
+  }
+}
+
+/**
+ * Make GET API call to backend
+ * @param {string} action - Action to perform
+ * @returns {Promise} Response data
+ */
+async function callAPIGet(action) {
+  try {
+    const response = await fetch(`${API_URL}?action=${action}`, {
+      method: 'GET'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('API call failed:', error);
+    
+    // Provide detailed error information
+    if (error.message.includes('Failed to fetch')) {
+      throw new Error('Cannot connect to server. Please check:\n1. Apps Script deployment is active\n2. Deployment access is set to "Anyone"\n3. You have internet connection');
+    }
+    throw error;
+  }
+}
+
+
+// utils.js
+/**
+ * ============================================
+ * UTILITY FUNCTIONS
+ * ============================================
+ * 
+ * Helper functions for word counting, validation, etc.
+ */
+
+/**
+ * Count words in text
+ * @param {string} text - Text to count
+ * @returns {number} Word count
+ */
+function countWords(text) {
+  if (!text) return 0;
+  const matches = text.trim().split(/\s+/).filter(Boolean);
+  return matches.length;
+}
+
+/**
+ * Enforce word limit on value and return truncated text
+ * @param {string} val - Text value
+ * @returns {string} Truncated text
+ */
+function enforceWordLimitOnValue(val) {
+  if (!val) return '';
+  const words = val.trim().split(/\s+/).filter(Boolean);
+  if (words.length > MAX_WORDS) {
+    return words.slice(0, MAX_WORDS).join(' ');
+  }
+  return val;
+}
+
+/**
+ * Enforce word limit on textarea element
+ * @param {HTMLTextAreaElement} textarea - Textarea element
+ */
+function enforceWordLimit(textarea) {
+  const val = textarea.value || '';
+  const words = val.trim().split(/\s+/).filter(Boolean);
+  if (words.length > MAX_WORDS) {
+    textarea.value = words.slice(0, MAX_WORDS).join(' ');
+  }
+}
+
+/**
+ * Get persisted font size from localStorage
+ * @returns {number} Font size in pixels
+ */
+function getPersistedFontSize() {
+  try {
+    const v = localStorage.getItem(FONT_STORAGE_KEY);
+    const n = parseInt(v, 10);
+    if (!isNaN(n) && n >= 12 && n <= 40) return n;
+  } catch (e) {
+    console.warn('Cannot access localStorage:', e);
+  }
+  return DEFAULT_FONT_PX;
+}
+
+/**
+ * Persist font size to localStorage
+ * @param {number} px - Font size in pixels
+ */
+function setPersistedFontSize(px) {
+  try {
+    localStorage.setItem(FONT_STORAGE_KEY, String(px));
+  } catch (e) {
+    console.warn('Cannot save to localStorage:', e);
+  }
+}
+
+/**
+ * Show notification message
+ * @param {string} message - Message to display
+ * @param {string} type - Type of notice ('success' or 'error')
+ */
+function showNotice(message, type) {
+  const notice = document.getElementById('authNotice');
+  notice.className = 'notice ' + type;
+  
+  // Preserve line breaks in error messages
+  notice.style.whiteSpace = 'pre-wrap';
+  notice.style.textAlign = 'left';
+  notice.style.fontSize = '0.7rem';
+  notice.textContent = message;
+  
+  // Don't auto-hide error messages that are long/important
+  if (type === 'error' && message.length > 100) {
+    // Keep error visible longer for debugging
+    setTimeout(() => {
+      notice.textContent = '';
+      notice.className = 'notice';
+    }, 15000);
+  } else {
+    setTimeout(() => {
+      notice.textContent = '';
+      notice.className = 'notice';
+    }, 5000);
+  }
+}
+
+/**
+ * Generic error handler
+ * @param {Error} error - Error object
+ */
+function onError(error) {
+  console.error(error);
+  showNotice('An error occurred. Please try again.', 'error');
+  
+  const btn = document.getElementById('loginBtn');
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = 'Login';
+  }
+}
+
+
+// clock.js
+/**
+ * ============================================
+ * CLOCK FUNCTIONALITY
+ * ============================================
+ * 
+ * Manages the digital clock display
+ */
+
+let clockInterval = null;
+let bootstrapDate = null;
+
+/**
+ * Start clock from server time (Philippines timezone)
+ * @param {object} result - Server time response
+ */
+function startClockFromServer(result) {
+  const el = document.getElementById('digitalClock');
+  
+  if (!result || !result.success || !result.data) {
+    startClockLocal();
+    return;
+  }
+
+  const d = result.data;
+  const iso = `${d.year}-${String(d.month).padStart(2,'0')}-${String(d.day).padStart(2,'0')}T${String(d.hour).padStart(2,'0')}:${String(d.minute).padStart(2,'0')}:${String(d.seconds).padStart(2,'0')}+08:00`;
+  bootstrapDate = new Date(iso);
+
+  if (clockInterval) clearInterval(clockInterval);
+
+  function tick() {
+    bootstrapDate = new Date(bootstrapDate.getTime() + 1000);
+    const h = String(bootstrapDate.getHours()).padStart(2, '0');
+    const m = String(bootstrapDate.getMinutes()).padStart(2, '0');
+    const s = String(bootstrapDate.getSeconds()).padStart(2, '0');
+    el.textContent = h + ':' + m + ':' + s;
+  }
+
+  tick();
+  clockInterval = setInterval(tick, CLOCK_UPDATE_INTERVAL);
+}
+
+/**
+ * Start clock using local system time (fallback)
+ */
+function startClockLocal() {
+  const el = document.getElementById('digitalClock');
+  
+  if (clockInterval) clearInterval(clockInterval);
+  
+  function tickLocal() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const s = String(now.getSeconds()).padStart(2,'0');
+    el.textContent = h + ':' + m + ':' + s;
+  }
+  
+  tickLocal();
+  clockInterval = setInterval(tickLocal, CLOCK_UPDATE_INTERVAL);
+}
+
+
+// auth.js
+/**
+ * ============================================
+ * AUTHENTICATION FUNCTIONS
+ * ============================================
+ * 
+ * Handles login, logout, and session management
+ */
+
+let currentUser = null;
+let currentPassword = '';
+
+/**
+ * Load student names from server
+ */
+async function loadNames() {
+  try {
+    const names = await callAPIGet('getNames');
+    onNamesLoaded(names);
+  } catch (error) {
+    const select = document.getElementById('nameSelect');
+    select.innerHTML = '<option value="">Error loading names - check deployment</option>';
+    showNotice('Cannot load student names. Apps Script deployment may not be accessible. Error: ' + error.message, 'error');
+    console.error('Load names error:', error);
+  }
+}
+
+/**
+ * Populate names dropdown
+ * @param {Array} names - Array of {name, row} objects
+ */
+function onNamesLoaded(names) {
+  const select = document.getElementById('nameSelect');
+  select.innerHTML = '<option value="">-- Select your name --</option>';
+  
+  (names || []).forEach(item => {
+    const option = document.createElement('option');
+    option.value = item.name;
+    option.textContent = item.name;
+    option.dataset.row = item.row;
+    select.appendChild(option);
+  });
+}
+
+/**
+ * Handle login button click
+ */
+async function onLogin() {
+  const name = document.getElementById('nameSelect').value;
+  const password = document.getElementById('passwordField').value;
+  
+  if (!name || !password) {
+    showNotice('Please select your name and enter password', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+  btn.textContent = 'Logging in...';
+
+  try {
+    const response = await callAPI('getUserData', { name, password });
+    onLoginSuccess(response);
+  } catch (error) {
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = false;
+    btn.textContent = 'Login';
+    
+    let errorMsg = 'Login failed: ';
+    if (error.message.includes('Cannot connect to server')) {
+      errorMsg += 'Cannot access Apps Script backend. Please verify:\n\n' +
+                 '1. Apps Script Web App is deployed\n' +
+                 '2. Access is set to "Anyone" (not "Only myself")\n' +
+                 '3. Current URL: ' + API_URL;
+    } else {
+      errorMsg += error.message || 'Unknown error';
+    }
+    
+    showNotice(errorMsg, 'error');
+    console.error('Login error:', error);
+    document.getElementById('passwordField').value = '';
+  }
+}
+
+/**
+ * Handle successful login
+ * @param {object} response - Login response from server
+ */
+function onLoginSuccess(response) {
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = false;
+  btn.textContent = 'Login';
+
+  if (!response || !response.success) {
+    showNotice(response && response.message ? response.message : 'Invalid credentials', 'error');
+    document.getElementById('passwordField').value = '';
+    return;
+  }
+
+  currentUser = response;
+  currentPassword = document.getElementById('passwordField').value;
+  
+  showProgressView();
+  renderProgressTable();
+  showNotice('Login successful', 'success');
+}
+
+/**
+ * Show progress view and hide login card
+ */
+function showProgressView() {
+  document.getElementById('loginCard').style.display = 'none';
+  document.getElementById('progressCard').classList.add('active');
+  document.getElementById('logoutBtn').style.display = 'inline-block';
+  document.getElementById('headerStudentName').textContent = currentUser.name;
+}
+
+/**
+ * Handle logout
+ */
+function onLogout() {
+  currentUser = null;
+  currentPassword = '';
+  document.getElementById('loginCard').style.display = 'block';
+  document.getElementById('progressCard').classList.remove('active');
+  document.getElementById('logoutBtn').style.display = 'none';
+  document.getElementById('passwordField').value = '';
+  document.getElementById('headerStudentName').textContent = '';
+  document.getElementById('authNotice').innerHTML = '';
+}
+
+/**
+ * Refresh progress data from server
+ */
+async function refreshProgress() {
+  if (!currentUser) return;
+  
+  try {
+    const response = await callAPI('getUserData', {
+      name: currentUser.name,
+      password: currentPassword
+    });
+    
+    if (response && response.success) {
+      currentUser = response;
+      renderProgressTable();
+      showNotice('Progress refreshed', 'success');
+    }
+  } catch (error) {
+    onError(error);
+  }
+}
+
+
+// modal.js
+/**
+ * ============================================
+ * MODAL EDITOR FUNCTIONS
+ * ============================================
+ * 
+ * Fullscreen modal editor with font size controls
+ */
+
+/**
+ * Create modal DOM structure
+ * @returns {object} Modal DOM elements
+ */
+function createModal() {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.tabIndex = 0;
+
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+
+  const header = document.createElement('div');
+  header.className = 'modal-header';
+
+  const title = document.createElement('div');
+  title.className = 'modal-title';
+  title.textContent = 'Edit input';
+
+  const controls = document.createElement('div');
+  controls.className = 'modal-controls';
+
+  const fontControl = document.createElement('div');
+  fontControl.className = 'font-control';
+
+  const minusBtn = document.createElement('button');
+  minusBtn.type = 'button';
+  minusBtn.title = 'Decrease font size';
+  minusBtn.textContent = 'A-';
+
+  const plusBtn = document.createElement('button');
+  plusBtn.type = 'button';
+  plusBtn.title = 'Increase font size';
+  plusBtn.textContent = 'A+';
+
+  const resetBtn = document.createElement('button');
+  resetBtn.type = 'button';
+  resetBtn.title = 'Reset font size';
+  resetBtn.textContent = 'Reset';
+
+  const range = document.createElement('input');
+  range.type = 'range';
+  range.min = 12;
+  range.max = 40;
+  range.step = 1;
+
+  const label = document.createElement('div');
+  label.className = 'font-size-label';
+  label.textContent = (getPersistedFontSize() || DEFAULT_FONT_PX) + ' px';
+
+  fontControl.appendChild(minusBtn);
+  fontControl.appendChild(range);
+  fontControl.appendChild(plusBtn);
+  fontControl.appendChild(label);
+  fontControl.appendChild(resetBtn);
+
+  controls.appendChild(fontControl);
+  header.appendChild(title);
+  header.appendChild(controls);
+
+  const textarea = document.createElement('textarea');
+  textarea.className = 'modal-textarea';
+  textarea.placeholder = 'Type your response here (max ' + MAX_WORDS + ' words)';
+
+  const footer = document.createElement('div');
+  footer.className = 'modal-footer';
+
+  const wc = document.createElement('div');
+  wc.className = 'word-count';
+  wc.style.color = '#cbd5e1';
+  wc.textContent = '0 / ' + MAX_WORDS + ' words';
+
+  const btns = document.createElement('div');
+  btns.style.display = 'flex';
+  btns.style.gap = '8px';
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'modal-save';
+  saveBtn.textContent = 'Save';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'modal-cancel';
+  cancelBtn.textContent = 'Cancel';
+
+  btns.appendChild(saveBtn);
+  btns.appendChild(cancelBtn);
+  footer.appendChild(wc);
+  footer.appendChild(btns);
+
+  modal.appendChild(header);
+  modal.appendChild(textarea);
+  modal.appendChild(footer);
+  overlay.appendChild(modal);
+
+  // Initialize font size
+  const persisted = getPersistedFontSize();
+  range.value = persisted;
+  label.textContent = persisted + ' px';
+  textarea.style.fontSize = persisted + 'px';
+
+  // Wire font controls
+  minusBtn.addEventListener('click', () => {
+    let v = parseInt(range.value, 10) - 1;
+    if (v < parseInt(range.min, 10)) v = parseInt(range.min, 10);
+    range.value = v;
+    range.dispatchEvent(new Event('input'));
+  });
+
+  plusBtn.addEventListener('click', () => {
+    let v = parseInt(range.value, 10) + 1;
+    if (v > parseInt(range.max, 10)) v = parseInt(range.max, 10);
+    range.value = v;
+    range.dispatchEvent(new Event('input'));
+  });
+
+  resetBtn.addEventListener('click', () => {
+    range.value = DEFAULT_FONT_PX;
+    range.dispatchEvent(new Event('input'));
+  });
+
+  range.addEventListener('input', () => {
+    const v = parseInt(range.value, 10);
+    textarea.style.fontSize = v + 'px';
+    label.textContent = v + ' px';
+    setPersistedFontSize(v);
+  });
+
+  return {
+    overlay,
+    modal,
+    title,
+    textarea,
+    wc,
+    saveBtn,
+    cancelBtn
+  };
+}
+
+/**
+ * Open modal editor for textarea input
+ * @param {HTMLTextAreaElement} smallTextarea - Original textarea element
+ * @param {number} moduleNumber - Module number
+ * @param {string} activityName - Activity name
+ * @param {number} activityIndex - Activity index
+ * @param {object} activityObj - Activity object
+ */
+function openInputModal(smallTextarea, moduleNumber, activityName, activityIndex, activityObj) {
+  if (!smallTextarea) return;
+  if (smallTextarea.disabled) return;
+
+  const modalParts = createModal();
+  modalParts.title.textContent = 'Module ' + moduleNumber + ' — ' + (activityName || 'Activity');
+  modalParts.textarea.value = smallTextarea.value || '';
+  modalParts.textarea.value = enforceWordLimitOnValue(modalParts.textarea.value);
+  modalParts.wc.textContent = countWords(modalParts.textarea.value) + ' / ' + MAX_WORDS + ' words';
+
+  document.body.appendChild(modalParts.overlay);
+
+  const origin = smallTextarea;
+
+  setTimeout(() => {
+    modalParts.textarea.focus();
+    modalParts.textarea.selectionStart = modalParts.textarea.selectionEnd = modalParts.textarea.value.length;
+  }, 50);
+
+  modalParts.textarea.addEventListener('input', () => {
+    enforceWordLimit(modalParts.textarea);
+    modalParts.wc.textContent = countWords(modalParts.textarea.value) + ' / ' + MAX_WORDS + ' words';
+  });
+
+  function closeModal(apply) {
+    if (modalParts.overlay && modalParts.overlay.parentNode) {
+      modalParts.overlay.parentNode.removeChild(modalParts.overlay);
+    }
+    if (apply) {
+      const newVal = modalParts.textarea.value;
+      origin.value = newVal;
+      const wcEl = origin.nextElementSibling;
+      if (wcEl && wcEl.classList && wcEl.classList.contains('word-count')) {
+        wcEl.textContent = countWords(newVal) + ' / ' + MAX_WORDS + ' words';
+      }
+    }
+    try {
+      origin.focus();
+    } catch (e) {}
+  }
+
+  modalParts.saveBtn.addEventListener('click', () => {
+    closeModal(true);
+  });
+
+  modalParts.cancelBtn.addEventListener('click', () => {
+    closeModal(false);
+  });
+
+  modalParts.overlay.addEventListener('click', (ev) => {
+    if (ev.target === modalParts.overlay) {
+      closeModal(false);
+    }
+  });
+
+  function onKeyDown(ev) {
+    if (ev.key === 'Escape') {
+      ev.preventDefault();
+      closeModal(false);
+      window.removeEventListener('keydown', onKeyDown);
+    } else if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 's') {
+      ev.preventDefault();
+      closeModal(true);
+    }
+  }
+  window.addEventListener('keydown', onKeyDown);
+}
+
+
+// progress.js
+/**
+ * ============================================
+ * PROGRESS TABLE RENDERING
+ * ============================================
+ * 
+ * Renders the student progress table
+ */
+
+/**
+ * Render the complete progress table
+ */
+function renderProgressTable() {
+  if (!currentUser || !currentUser.modules) return;
+
+  const tbody = document.getElementById('progressTableBody');
+  tbody.innerHTML = '';
+
+  let totalCompleted = 0;
+  let totalPending = 0;
+  let totalActivities = 0;
+
+  currentUser.modules.forEach(module => {
+    module.activities.forEach((activity, index) => {
+      totalActivities++;
+      
+      const row = document.createElement('tr');
+      row.setAttribute('data-module', module.module);
+      row.setAttribute('data-activity-index', index);
+      row.setAttribute('data-col', activity.col || '');
+      
+      // Module cell
+      const moduleCell = document.createElement('td');
+      moduleCell.className = 'module-cell';
+      if (index === 0) {
+        moduleCell.textContent = 'MODULE ' + module.module;
+      } else {
+        moduleCell.textContent = '';
+      }
+      row.appendChild(moduleCell);
+
+      // Activity cell
+      const activityCell = document.createElement('td');
+      activityCell.className = 'activity-cell';
+      activityCell.textContent = activity.name;
+      row.appendChild(activityCell);
+
+      // Status cell
+      const statusCell = document.createElement('td');
+      const badge = document.createElement('span');
+      badge.className = 'status-badge';
+      
+      const status = (activity.status || '').toUpperCase();
+      let isPending = false;
+      let isLocked = false;
+      let isCompleted = false;
+      let isNotApplicable = false;
+      
+      if (status === 'COMPLETED') {
+        badge.className += ' status-done';
+        badge.textContent = 'COMPLETED';
+        totalCompleted++;
+        isCompleted = true;
+      } else if (status === 'LOCKED') {
+        badge.className += ' status-locked';
+        badge.textContent = 'LOCKED';
+        isLocked = true;
+      } else if (status === 'NOT APPLICABLE' || status === 'N/A' || status === 'NA') {
+        badge.className += ' status-na';
+        badge.textContent = 'NOT APPLICABLE';
+        isNotApplicable = true;
+      } else if (status === 'EMPTY' || !status) {
+        badge.className += ' status-empty';
+        badge.textContent = 'NOT STARTED';
+        totalPending++;
+      } else {
+        badge.className += ' status-pending';
+        badge.textContent = 'PENDING';
+        totalPending++;
+        isPending = true;
+      }
+      
+      statusCell.appendChild(badge);
+      row.appendChild(statusCell);
+
+      // Input cell
+      const inputCell = document.createElement('td');
+      const textarea = document.createElement('textarea');
+      textarea.className = 'input-textarea';
+      textarea.maxLength = 100000;
+      textarea.value = activity.inputText || '';
+      textarea.placeholder = 'Enter notes / response (max 1000 words)';
+      textarea.readOnly = true;
+
+      textarea.oninput = function() {
+        enforceWordLimit(this);
+        const wc = countWords(this.value);
+        const wcSpan = this.nextElementSibling;
+        if (wcSpan) wcSpan.textContent = wc + ' / ' + MAX_WORDS + ' words';
+      };
+
+      textarea.addEventListener('click', (e) => {
+        if (textarea.disabled) return;
+        openInputModal(textarea, module.module, activity.name, index, activity);
+        e.stopPropagation();
+      });
+
+      const wc = document.createElement('div');
+      wc.className = 'word-count';
+      wc.textContent = countWords(textarea.value) + ' / ' + MAX_WORDS + ' words';
+
+      if (isCompleted || isLocked || isNotApplicable) {
+        textarea.disabled = true;
+        textarea.title = 'Disabled: activity is ' + badge.textContent;
+      } else {
+        textarea.style.cursor = 'pointer';
+      }
+
+      inputCell.appendChild(textarea);
+      inputCell.appendChild(wc);
+      row.appendChild(inputCell);
+
+      // DateTime cell
+      const datetimeCell = document.createElement('td');
+      datetimeCell.className = 'datetime-cell';
+      
+      if (activity.rawTimestamp && String(activity.rawTimestamp).trim() !== '') {
+        datetimeCell.textContent = activity.rawTimestamp;
+      } else {
+        datetimeCell.textContent = 'PENDING';
+        datetimeCell.classList.add('datetime-pending');
+      }
+      
+      row.appendChild(datetimeCell);
+
+      // Action cell
+      const actionCell = document.createElement('td');
+      const actionBtn = document.createElement('button');
+      actionBtn.className = 'btn-small';
+      
+      if (isCompleted || isLocked || isNotApplicable) {
+        actionBtn.className += ' btn-disabled';
+        actionBtn.disabled = true;
+        if (isCompleted) actionBtn.textContent = 'COMPLETED';
+        else if (isLocked) actionBtn.textContent = 'LOCKED';
+        else if (isNotApplicable) actionBtn.textContent = 'NOT APPLICABLE';
+      } else {
+        actionBtn.className += ' btn-action';
+        actionBtn.textContent = 'MARK AS DONE';
+        actionBtn.onclick = () => markAsDone(module.module, index, activity, textarea);
+      }
+      
+      actionCell.appendChild(actionBtn);
+      row.appendChild(actionCell);
+
+      tbody.appendChild(row);
+    });
+  });
+
+  // Update statistics
+  document.getElementById('statCompleted').textContent = totalCompleted;
+  document.getElementById('statPending').textContent = totalPending;
+  document.getElementById('statTotal').textContent = totalActivities;
+}
+
+/**
+ * Mark activity as done
+ * @param {number} moduleNumber - Module number
+ * @param {number} activityIndex - Activity index
+ * @param {object} activity - Activity object
+ * @param {HTMLTextAreaElement} textareaEl - Textarea element
+ */
+async function markAsDone(moduleNumber, activityIndex, activity, textareaEl) {
+  if (!currentUser) return;
+  
+  const confirmed = confirm(
+    'Mark "' + activity.name + '" in Module ' + moduleNumber + ' as DONE?\n\n' +
+    'This will update the status to COMPLETED and disable further editing of the input text.'
+  );
+  
+  if (!confirmed) return;
+
+  const row = currentUser.row;
+  const col = activity.col;
+  const inputText = textareaEl ? textareaEl.value : '';
+
+  const tbody = document.getElementById('progressTableBody');
+  const rows = tbody.querySelectorAll('tr');
+  let targetRow = null;
+  
+  rows.forEach(r => {
+    if (r.getAttribute('data-module') == moduleNumber && 
+        r.getAttribute('data-activity-index') == activityIndex) {
+      targetRow = r;
+      r.classList.add('updating-row');
+      const btn = r.querySelector('.btn-action');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'UPDATING...';
+      }
+    }
+  });
+
+  try {
+    const result = await callAPI('updateActivity', {
+      row: row,
+      colLetter: col,
+      newValue: 'DONE',
+      inputText: inputText
+    });
+    
+    if (result && result.success) {
+      const mod = currentUser.modules.find(m => m.module === moduleNumber);
+      if (mod && mod.activities[activityIndex]) {
+        mod.activities[activityIndex].rawValue = 'DONE';
+        mod.activities[activityIndex].rawTimestamp = result.timestamp || new Date().toString();
+        mod.activities[activityIndex].status = 'COMPLETED';
+        mod.activities[activityIndex].inputText = inputText;
+      }
+      renderProgressTable();
+      showNotice('Activity marked as DONE successfully!', 'success');
+    } else {
+      if (targetRow) targetRow.classList.remove('updating-row');
+      showNotice(result && result.message ? result.message : 'Failed to update activity', 'error');
+    }
+  } catch (error) {
+    if (targetRow) targetRow.classList.remove('updating-row');
+    console.error(error);
+    showNotice('Error updating activity: ' + (error && error.message ? error.message : String(error)), 'error');
+  }
+}
+
+
+// main.js
+/**
+ * ============================================
+ * MAIN APPLICATION INITIALIZATION
+ * ============================================
+ * 
+ * Entry point for the application
+ */
+
+document.addEventListener('DOMContentLoaded', async () => {
+  // Load student names
+  loadNames();
+
+  // Initialize clock from server (Philippines time)
+  try {
+    const result = await callAPIGet('getTime');
+    startClockFromServer(result);
+  } catch (error) {
+    console.warn('Failed to get server time, using local time:', error);
+    startClockLocal();
+  }
+});
+
+  </script>
+</body>
+</html>

@@ -1,10 +1,11 @@
-# Packet Module v114 - GitHub + Google Apps Script Deployment Guide
+# Packet Module - GitHub + Google Apps Script Deployment Guide
 
 ## 📋 Overview
 
-This guide walks you through deploying the Packet Module v114 system with:
-- **Frontend**: GitHub Pages (static HTML/CSS/JS)
-- **Backend**: Google Apps Script (server-side logic + Google Sheets storage)
+This guide walks you through deploying the Packet Module system with:
+- **Frontend**: `index.html` - GitHub Pages (static HTML/CSS/JS)
+- **Backend**: `114_module_script.gs` - Google Apps Script (server-side logic + Google Sheets storage)
+- **Version**: v114 (GitHub Edition)
 
 ---
 
@@ -50,9 +51,11 @@ This guide walks you through deploying the Packet Module v114 system with:
 
 1. In Google Sheets: **Extensions → Apps Script**
 2. Delete default `Code.gs` content
-3. **Copy entire contents** of `114_module_script.gs` into the editor
+3. **Copy entire contents** of `114_module_script.gs` from your repository into the editor
 4. **Save** the project (File → Save or Ctrl/Cmd+S)
-5. **Name the project**: "Packet Module v114 API"
+5. **Name the project**: "Packet Module API"
+
+**Note**: The file `114_module_script.gs` in your repository is the complete backend code.
 
 ### Step 1.3: Deploy as Web App
 
@@ -102,62 +105,74 @@ This guide walks you through deploying the Packet Module v114 system with:
 ### Step 2.1: Update API URL in index.html
 
 1. **Open** `index.html` file
-2. **Find line ~413** (inside `<script>` tag):
+2. **Find line ~407** (inside `<script>` tag):
    ```javascript
-   const API_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
+   const API_URL = 'https://script.google.com/macros/s/AKfycby9H7lhO-l47m83X_wkx7kWjAhtmN3opfAN8kFBGkqwWMVEWwaMYTBpgGKmT4daljWL/exec';
    ```
 
-3. **Replace `YOUR_DEPLOYMENT_ID`** with your actual Web App URL from Step 1.3:
+3. **Replace the entire URL** with your actual Web App URL from Step 1.3:
    ```javascript
-   const API_URL = 'https://script.google.com/macros/s/AKfycbzXXXXXXXXXXXXXXXXXXXXXXXX/exec';
+   const API_URL = 'https://script.google.com/macros/s/YOUR_NEW_DEPLOYMENT_ID/exec';
    ```
+   
+   ⚠️ **IMPORTANT**: The current URL is a placeholder. You MUST replace it with your own deployment URL.
 
-4. **Save** the file
+4. **Save** the file and commit to GitHub
 
 ### Step 2.2: Create GitHub Repository
 
 #### Option A: GitHub Web Interface
 
 1. Go to https://github.com/new
-2. **Repository name**: `packet-module-v114` (or your choice)
+2. **Repository name**: `PACKET_MODULE` (or your choice)
 3. **Visibility**: Public (required for free GitHub Pages)
 4. **Initialize**: Unchecked (we'll upload files manually)
 5. Click **Create repository**
 
+**Note**: If you're reading this from GitHub, you've already created the repository!
+
 #### Option B: GitHub CLI
 
 ```bash
-gh repo create packet-module-v114 --public --source=. --remote=origin
+gh repo create PACKET_MODULE --public --source=. --remote=origin
 ```
 
 ### Step 2.3: Upload Files to GitHub
 
+**Current Repository Structure**:
+```
+PACKET_MODULE/
+├── index.html                 # Main frontend (REQUIRED for deployment)
+├── 114_module_script.gs       # Backend script (copy to Apps Script)
+├── README.md                  # Project documentation
+├── DEPLOYMENT_GUIDE.md        # This guide
+└── QUICK_REFERENCE.md         # Quick reference
+```
+
 #### Option A: GitHub Web Interface
 
-1. In your new repository, click **Add file → Upload files**
-2. **Drag and drop** `index.html` (the updated one with real API URL)
-3. **Commit message**: "Initial deployment of Packet Module v114"
+1. In your repository, click **Add file → Upload files**
+2. **Drag and drop** `index.html` (updated with your API URL)
+3. **Commit message**: "Deploy Packet Module frontend"
 4. Click **Commit changes**
 
 #### Option B: Git Command Line
 
 ```bash
-# Initialize git repository (if not already)
-git init
+# Navigate to project directory
+cd /path/to/PACKET_MODULE
 
-# Add files
+# Add the updated index.html
 git add index.html
 
 # Commit
-git commit -m "Initial deployment of Packet Module v114"
-
-# Add remote (replace YOUR_USERNAME)
-git remote add origin https://github.com/YOUR_USERNAME/packet-module-v114.git
+git commit -m "Update index.html with deployment URL"
 
 # Push to GitHub
-git branch -M main
-git push -u origin main
+git push origin main
 ```
+
+**Note**: Only `index.html` is needed for GitHub Pages. The `.gs` file is for Apps Script only.
 
 ### Step 2.4: Enable GitHub Pages
 
@@ -170,8 +185,10 @@ git push -u origin main
 6. **Wait 1-2 minutes** for deployment
 7. **Your site will be live at**:
    ```
-   https://YOUR_USERNAME.github.io/packet-module-v114/
+   https://YOUR_USERNAME.github.io/PACKET_MODULE/
    ```
+   
+   Example: `https://tonycitenian.github.io/PACKET_MODULE/`
 
 8. **Bookmark this URL** - this is your application!
 
@@ -184,7 +201,8 @@ git push -u origin main
 - [ ] Page loads without errors (check browser console: F12)
 - [ ] Clock displays and updates every second
 - [ ] Red clock color (#ef4444) displays correctly
-- [ ] Version shows "v114 GitHub" in header
+- [ ] Version shows "v114" in header
+- [ ] Title shows "Packet Module — v114 (GitHub Edition)"
 
 ### ✅ Authentication
 
@@ -705,6 +723,7 @@ After completing deployment, you should have:
 
 ---
 
-**Last Updated**: December 10, 2024  
-**Version**: 114  
+**Last Updated**: December 10, 2025  
+**Version**: 114 (GitHub Edition)  
+**Repository**: https://github.com/tonycitenian/PACKET_MODULE  
 **Author**: Packet Module Development Team

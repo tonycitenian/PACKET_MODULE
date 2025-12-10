@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Packet Module — v114 (GitHub Edition)</title>
+  <!-- CSS will be injected here by build script -->
+</head>
+<body>
+  <div class="wrap">
+    <!-- Header -->
+    <div class="header">
+      <div>
+        <div class="title">📚 Packet Module</div>
+        <div class="student-name" id="headerStudentName"></div>
+      </div>
+      <div class="controls">
+        <div class="digital-clock" id="digitalClock">--:--:--</div>
+        <div class="ver">v114</div>
+        <button class="btn ghost" id="logoutBtn" onclick="onLogout()" style="display:none">Logout</button>
+      </div>
+    </div>
+
+    <!-- Login Card -->
+    <div class="login-card" id="loginCard">
+      <h2 class="login-title">Student Login</h2>
+      <div class="login-table">
+        <div class="form-group">
+          <label for="nameSelect">Select Your Name</label>
+          <select id="nameSelect">
+            <option value="">Loading names...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="passwordField">Password</label>
+          <input id="passwordField" type="password" placeholder="Enter your password">
+        </div>
+        <button class="btn" id="loginBtn" onclick="onLogin()">Login</button>
+      </div>
+      <div id="authNotice"></div>
+    </div>
+
+    <!-- Progress Table -->
+    <div class="progress-card" id="progressCard">
+      <div class="progress-header">
+        <div>
+          <h2 class="progress-info">Your Progress</h2>
+          <p class="progress-subtitle">MODULE, ACTIVITY | STATUS | SUBMISSION | DATE UPDATED | ACTION</p>
+        </div>
+        <div class="progress-stats">
+          <div class="stat-item">
+            <span class="stat-label">COMPLETED</span>
+            <span class="stat-value" id="statCompleted">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">PENDING</span>
+            <span class="stat-value" id="statPending">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">TOTAL</span>
+            <span class="stat-value" id="statTotal">140</span>
+          </div>
+        </div>
+        <button class="btn ghost" onclick="refreshProgress()">Refresh</button>
+      </div>
+
+      <div class="table-container">
+        <table class="progress-table">
+          <thead>
+            <tr>
+              <th>MODULE</th>
+              <th>ACTIVITY</th>
+              <th>STATUS</th>
+              <th>SUBMISSION</th>
+              <th>DATE AND TIME</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody id="progressTableBody">
+            <!-- Rows will be populated here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript will be injected here by build script -->
+</body>
+</html>
