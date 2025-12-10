@@ -138,25 +138,39 @@
     padding: var(--spacing-xs) var(--spacing-sm);
   }
 
-  /* Table - Horizontal scroll */
+  /* Mobile: Hide table, show cards */
   .table-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    display: none; /* Hide table on mobile */
   }
 
-  .progress-table {
-    min-width: 600px; /* Ensure table doesn't shrink too much */
+  .progress-cards {
+    display: flex; /* Show cards on mobile */
   }
 
-  .progress-table th,
-  .progress-table td {
-    padding: var(--spacing-sm);
-    font-size: 0.85rem;
+  /* Mobile Bottom Navigation */
+  .mobile-bottom-nav {
+    display: block;
   }
 
+  .fab-container,
+  .scroll-top-btn {
+    display: flex;
+  }
+
+  /* Add bottom padding for fixed nav */
+  body {
+    padding-bottom: 70px;
+  }
+
+  .wrap {
+    padding-bottom: var(--spacing-lg);
+  }
+
+  /* Touch-optimized buttons */
   .btn-small {
-    padding: 0.3rem 0.6rem;
-    font-size: 0.7rem;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+    min-height: 44px; /* iOS recommended touch target */
   }
 
   /* Modal Editor */

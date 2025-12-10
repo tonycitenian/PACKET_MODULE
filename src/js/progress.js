@@ -3,7 +3,7 @@
  * PROGRESS TABLE RENDERING
  * ============================================
  * 
- * Renders the student progress table
+ * Renders the student progress table and mobile cards
  */
 
 /**
@@ -160,6 +160,12 @@ function renderProgressTable() {
   document.getElementById('statCompleted').textContent = totalCompleted;
   document.getElementById('statPending').textContent = totalPending;
   document.getElementById('statTotal').textContent = totalActivities;
+  
+  // Render mobile cards
+  const cardData = buildCardData();
+  if (typeof renderProgressCards === 'function') {
+    renderProgressCards(cardData);
+  }
 }
 
 /**
@@ -227,4 +233,26 @@ async function markAsDone(moduleNumber, activityIndex, activity, textareaEl) {
     console.error(error);
     showNotice('Error updating activity: ' + (error && error.message ? error.message : String(error)), 'error');
   }
+}
+
+/**
+ * Build card data array from user modules
+ */
+function buildCardData() {
+  if (!currentUser || !currentUser.modules) return [];
+  
+  const data = [];
+  currentUser.modules.forEach(module => {
+    module.activities.forEach(activity => {
+      data.push({
+        Module: 'MODULE ' + module.module,
+        Activity: activity.name,
+        Status: activity.status === 'COMPLETED' ? 'Done' : 'Pending',
+        Submission: activity.inputText || '',
+        Date: activity.rawTimestamp || ''
+      });
+    });
+  });
+  
+  return data;
 }

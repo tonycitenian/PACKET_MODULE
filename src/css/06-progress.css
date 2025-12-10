@@ -163,3 +163,144 @@
   color: var(--text-muted);
   text-align: right;
 }
+
+/* ============================================
+   Mobile Card Layout (hidden by default)
+   ============================================ */
+
+.progress-cards {
+  display: none; /* Hidden on desktop, shown on mobile */
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.progress-card-item {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  transition: all var(--transition-fast);
+}
+
+.progress-card-item:active {
+  transform: scale(0.98);
+  background: linear-gradient(180deg, rgba(79, 70, 229, 0.15), rgba(139, 92, 246, 0.08));
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-module {
+  font-weight: 900;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.card-status {
+  display: inline-block;
+}
+
+.card-body {
+  margin-bottom: var(--spacing-sm);
+}
+
+.card-activity {
+  font-weight: 700;
+  color: var(--text-white);
+  font-size: 0.95rem;
+  margin-bottom: var(--spacing-xs);
+  line-height: 1.4;
+}
+
+.card-submission {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin-bottom: var(--spacing-xs);
+}
+
+.card-datetime {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.card-datetime-pending {
+  color: var(--text-ultra-muted);
+  font-style: italic;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.card-updating {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Collapsible Section */
+.collapsible-section {
+  margin-bottom: var(--spacing-md);
+}
+
+.collapsible-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--transition-fast);
+}
+
+.collapsible-header:active {
+  background: rgba(79, 70, 229, 0.1);
+  transform: scale(0.98);
+}
+
+.collapsible-title {
+  font-weight: 800;
+  color: var(--text-white);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.collapsible-icon {
+  font-size: 1.2rem;
+  transition: transform var(--transition-fast);
+  color: var(--text-secondary);
+}
+
+.collapsible-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.collapsible-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.collapsible-content.expanded {
+  max-height: 5000px;
+  transition: max-height 0.5s ease-in;
+}
+
+.collapsible-inner {
+  padding-top: var(--spacing-md);
+}
+

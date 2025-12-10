@@ -78,6 +78,7 @@
         <button class="btn ghost" onclick="refreshProgress()">Refresh</button>
       </div>
 
+      <!-- Desktop Table View -->
       <div class="table-container">
         <table class="progress-table">
           <thead>
@@ -95,8 +96,40 @@
           </tbody>
         </table>
       </div>
+
+      <!-- Mobile Cards View -->
+      <div class="progress-cards" id="progressCardsContainer">
+        <!-- Cards will be populated here on mobile -->
+      </div>
     </div>
   </div>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="mobile-bottom-nav">
+    <div class="bottom-nav-container">
+      <div class="bottom-nav-item active" data-action="home">
+        <div class="bottom-nav-icon">🏠</div>
+        <div class="bottom-nav-label">Home</div>
+      </div>
+      <div class="bottom-nav-item" data-action="progress">
+        <div class="bottom-nav-icon">📊</div>
+        <div class="bottom-nav-label">Progress</div>
+      </div>
+      <div class="bottom-nav-item" data-action="stats">
+        <div class="bottom-nav-icon">📈</div>
+        <div class="bottom-nav-label">Stats</div>
+      </div>
+      <div class="bottom-nav-item" data-action="profile">
+        <div class="bottom-nav-icon">👤</div>
+        <div class="bottom-nav-label">Profile</div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Scroll to Top Button -->
+  <button class="scroll-top-btn" aria-label="Scroll to top">
+    ↑
+  </button>
 
   <!-- JavaScript will be injected here by build script -->
 </body>

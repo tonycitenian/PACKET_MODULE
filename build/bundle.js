@@ -27,7 +27,8 @@ const CSS_FILES = [
   '05-login.css',
   '06-progress.css',
   '07-modal.css',
-  '08-responsive.css'
+  '08-responsive.css',
+  '09-mobile-nav.css'
 ];
 
 // JavaScript files in order
@@ -39,6 +40,7 @@ const JS_FILES = [
   'auth.js',
   'modal.js',
   'progress.js',
+  'mobile.js',
   'pwa.js',
   'main.js'
 ];

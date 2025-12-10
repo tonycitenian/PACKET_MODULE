@@ -18,4 +18,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.warn('Failed to get server time, using local time:', error);
     startClockLocal();
   }
+  
+  // Initialize mobile features
+  if (typeof initMobileFeatures === 'function') {
+    initMobileFeatures();
+  }
 });
