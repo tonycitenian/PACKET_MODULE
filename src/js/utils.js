@@ -7,6 +7,49 @@
  */
 
 /**
+ * Show loading overlay with spinner
+ * @param {string} message - Main loading message
+ * @param {string} submessage - Optional secondary message
+ */
+function showLoading(message = 'Loading...', submessage = '') {
+  // Remove existing loader if present
+  hideLoading();
+  
+  const overlay = document.createElement('div');
+  overlay.id = 'loadingOverlay';
+  overlay.className = 'loading-overlay';
+  
+  const spinner = document.createElement('div');
+  spinner.className = 'loading-spinner';
+  
+  const msgEl = document.createElement('div');
+  msgEl.className = 'loading-message';
+  msgEl.textContent = message;
+  
+  overlay.appendChild(spinner);
+  overlay.appendChild(msgEl);
+  
+  if (submessage) {
+    const subEl = document.createElement('div');
+    subEl.className = 'loading-submessage';
+    subEl.textContent = submessage;
+    overlay.appendChild(subEl);
+  }
+  
+  document.body.appendChild(overlay);
+}
+
+/**
+ * Hide loading overlay
+ */
+function hideLoading() {
+  const overlay = document.getElementById('loadingOverlay');
+  if (overlay) {
+    overlay.remove();
+  }
+}
+
+/**
  * Count words in text
  * @param {string} text - Text to count
  * @returns {number} Word count

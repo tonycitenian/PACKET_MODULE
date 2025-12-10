@@ -13,7 +13,7 @@ function renderProgressTable() {
   if (!currentUser || !currentUser.modules) return;
 
   const tbody = document.getElementById('progressTableBody');
-  tbody.innerHTML = '';
+  const fragment = document.createDocumentFragment();
 
   let totalCompleted = 0;
   let totalPending = 0;
@@ -188,23 +188,30 @@ async function markAsDone(moduleNumber, activityIndex, activity, textareaEl) {
   const row = currentUser.row;
   const col = activity.col;
   const inputText = textareaEl ? textareaEl.value : '';
-
-  const tbody = document.getElementById('progressTableBody');
-  const rows = tbody.querySelectorAll('tr');
-  let targetRow = null;
   
-  rows.forEach(r => {
-    if (r.getAttribute('data-module') == moduleNumber && 
-        r.getAttribute('data-activity-index') == activityIndex) {
-      targetRow = r;
-      r.classList.add('updating-row');
-      const btn = r.querySelector('.btn-action');
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = 'UPDATING...';
-      }
-    }
-  });
+  // Backup original state for rollback
+  const mod = currentUser.modules.find(m => m.module === moduleNumber);
+  const originalActivity = mod ? JSON.parse(JSON.stringify(mod.activities[activityIndex])) : null;
+
+  // OPTIMISTIC UPDATE: Update UI immediately
+  if (mod && mod.activities[activityIndex]) {
+    mod.activities[activityIndex].rawValue = 'DONE';
+    mod.activities[activityIndex].status = 'COMPLETED';
+    mod.activities[activityIndex].rawTimestamp = new Date().toLocaleString('en-US', { 
+      timeZone: 'Asia/Manila',
+      year: 'numeric',
+      month: '2-digit', 
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+    mod.activities[activityIndex].inputText = inputText;
+  }
+  
+  // Re-render table with optimistic update
+  renderProgressTable();
+  showNotice('Saving to server...', 'info');
 
   try {
     const result = await callAPI('updateActivity', {
@@ -215,23 +222,28 @@ async function markAsDone(moduleNumber, activityIndex, activity, textareaEl) {
     });
     
     if (result && result.success) {
-      const mod = currentUser.modules.find(m => m.module === moduleNumber);
+      // Update with server timestamp
       if (mod && mod.activities[activityIndex]) {
-        mod.activities[activityIndex].rawValue = 'DONE';
-        mod.activities[activityIndex].rawTimestamp = result.timestamp || new Date().toString();
-        mod.activities[activityIndex].status = 'COMPLETED';
-        mod.activities[activityIndex].inputText = inputText;
+        mod.activities[activityIndex].rawTimestamp = result.timestamp || mod.activities[activityIndex].rawTimestamp;
       }
       renderProgressTable();
-      showNotice('Activity marked as DONE successfully!', 'success');
+      showNotice('✓ Saved successfully!', 'success');
     } else {
-      if (targetRow) targetRow.classList.remove('updating-row');
-      showNotice(result && result.message ? result.message : 'Failed to update activity', 'error');
+      // Rollback optimistic update on failure
+      if (originalActivity && mod) {
+        mod.activities[activityIndex] = originalActivity;
+        renderProgressTable();
+      }
+      showNotice('Save failed: ' + (result && result.message ? result.message : 'Unknown error') + '\nPlease try again.', 'error');
     }
   } catch (error) {
-    if (targetRow) targetRow.classList.remove('updating-row');
+    // Rollback optimistic update on error
+    if (originalActivity && mod) {
+      mod.activities[activityIndex] = originalActivity;
+      renderProgressTable();
+    }
     console.error(error);
-    showNotice('Error updating activity: ' + (error && error.message ? error.message : String(error)), 'error');
+    showNotice('Network error: ' + (error && error.message ? error.message : String(error)) + '\nYour changes were not saved. Please try again.', 'error');
   }
 }
 

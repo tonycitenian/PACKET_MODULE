@@ -211,11 +211,16 @@ async function onLogin() {
   const btn = document.getElementById('loginBtn');
   btn.disabled = true;
   btn.textContent = 'Logging in...';
+  
+  // Show loading overlay
+  showLoading('Connecting to server...', 'This may take 10-30 seconds');
 
   try {
     const response = await callAPI('getUserData', { name, password });
     onLoginSuccess(response);
   } catch (error) {
+    hideLoading();
+    
     const btn = document.getElementById('loginBtn');
     btn.disabled = false;
     btn.textContent = 'Login';
@@ -241,6 +246,8 @@ async function onLogin() {
  * @param {object} response - Login response from server
  */
 function onLoginSuccess(response) {
+  hideLoading();
+  
   const btn = document.getElementById('loginBtn');
   btn.disabled = false;
   btn.textContent = 'Login';
@@ -289,6 +296,8 @@ function onLogout() {
 async function refreshProgress() {
   if (!currentUser) return;
   
+  showLoading('Refreshing progress...', 'Fetching latest data');
+  
   try {
     const response = await callAPI('getUserData', {
       name: currentUser.name,
@@ -302,5 +311,7 @@ async function refreshProgress() {
     }
   } catch (error) {
     onError(error);
+  } finally {
+    hideLoading();
   }
 }
