@@ -15,7 +15,7 @@ const path = require('path');
 // Paths
 const SRC_DIR = path.join(__dirname, '../src');
 const PUBLIC_DIR = path.join(__dirname, '../public');
-const HTML_TEMPLATE = path.join(SRC_DIR, 'index.html');
+const HTML_TEMPLATE = path.join(SRC_DIR, 'module_progress.html');
 const OUTPUT_FILE = path.join(PUBLIC_DIR, 'index.html');
 
 // CSS files in order
