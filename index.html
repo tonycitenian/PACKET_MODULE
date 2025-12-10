@@ -423,12 +423,16 @@
         });
         
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error(`Server returned ${response.status}: ${response.statusText}`);
         }
         
         return await response.json();
       } catch (error) {
         console.error('API call failed:', error);
+        // Provide detailed error information
+        if (error.message.includes('Failed to fetch')) {
+          throw new Error('Cannot connect to server. Please check:\n1. Apps Script deployment is active\n2. Deployment access is set to "Anyone"\n3. You have internet connection');
+        }
         throw error;
       }
     }
@@ -438,12 +442,16 @@
         const response = await fetch(`${API_URL}?action=${action}`);
         
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error(`Server returned ${response.status}: ${response.statusText}`);
         }
         
         return await response.json();
       } catch (error) {
         console.error('API call failed:', error);
+        // Provide detailed error information
+        if (error.message.includes('Failed to fetch')) {
+          throw new Error('Cannot connect to server. Please check:\n1. Apps Script deployment is active\n2. Deployment access is set to "Anyone"\n3. You have internet connection');
+        }
         throw error;
       }
     }
@@ -525,7 +533,10 @@
         const names = await callAPIGet('getNames');
         onNamesLoaded(names);
       } catch (error) {
-        onError(error);
+        const select = document.getElementById('nameSelect');
+        select.innerHTML = '<option value="">Error loading names - check deployment</option>';
+        showNotice('Cannot load student names. Apps Script deployment may not be accessible. Error: ' + error.message, 'error');
+        console.error('Load names error:', error);
       }
     }
 
@@ -558,7 +569,23 @@
         const response = await callAPI('getUserData', { name, password });
         onLoginSuccess(response);
       } catch (error) {
-        onError(error);
+        const btn = document.getElementById('loginBtn');
+        btn.disabled = false;
+        btn.textContent = 'Login';
+        
+        let errorMsg = 'Login failed: ';
+        if (error.message.includes('Cannot connect to server')) {
+          errorMsg += 'Cannot access Apps Script backend. Please verify:\n\n' +
+                     '1. Apps Script Web App is deployed\n' +
+                     '2. Access is set to "Anyone" (not "Only myself")\n' +
+                     '3. Current URL: ' + API_URL;
+        } else {
+          errorMsg += error.message || 'Unknown error';
+        }
+        
+        showNotice(errorMsg, 'error');
+        console.error('Login error:', error);
+        document.getElementById('passwordField').value = '';
       }
     }
 
@@ -1079,12 +1106,25 @@
     function showNotice(message, type) {
       const notice = document.getElementById('authNotice');
       notice.className = 'notice ' + type;
+      // Preserve line breaks in error messages
+      notice.style.whiteSpace = 'pre-wrap';
+      notice.style.textAlign = 'left';
+      notice.style.fontSize = '0.7rem';
       notice.textContent = message;
       
-      setTimeout(() => {
-        notice.textContent = '';
-        notice.className = 'notice';
-      }, 5000);
+      // Don't auto-hide error messages that are long/important
+      if (type === 'error' && message.length > 100) {
+        // Keep error visible longer for debugging
+        setTimeout(() => {
+          notice.textContent = '';
+          notice.className = 'notice';
+        }, 15000);
+      } else {
+        setTimeout(() => {
+          notice.textContent = '';
+          notice.className = 'notice';
+        }, 5000);
+      }
     }
 
     function onError(error) {
