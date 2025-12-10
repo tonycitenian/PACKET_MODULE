@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Packet Module — v114 (GitHub Edition)</title>
+  <style>
+    /* Base sizing */
+    html { font-size: 25px; }
+    body {
+      margin: 0;
+      padding: 40px;
+      font-family: Inter, system-ui, "Segoe UI", Roboto, Helvetica, Arial;
+      background: linear-gradient(180deg, #071428, #081428);
+      color: #e6eef8;
+      min-height: 100vh;
+    }
+
+    .wrap { 
+      max-width: 1800px; 
+      margin: 0 auto; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 2rem; 
+    }
+
+    .header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      padding: 1.5rem;
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+    }
+
+    .title { 
+      font-weight: 900; 
+      font-size: 1.8rem;
+      color: #fff;
+    }
+
+    .student-name {
+      font-weight: 800;
+      margin-top: 0.5rem;
+      color: #a5b4fc;
+      font-size: 1rem;
+    }
+
+    .ver { 
+      font-weight: 800; 
+      padding: 0.5rem 1rem; 
+      border-radius: 999px; 
+      background: rgba(255,255,255,0.04);
+      font-size: 0.8rem;
+    }
+
+    /* clock */
+    .digital-clock {
+      font-weight: 800;
+      font-size: 28px;
+      color: #ef4444;           /* red color requested */
+      height: 70px;            /* 70px height */
+      line-height: 70px;       /* vertically center */
+      padding: 0 12px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 8px;
+      text-align: center;
+      min-width: 260px;
+    }
+
+    /* Login Card and form styles (unchanged except for versioning) */
+    .login-card {
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+      padding: 3rem;
+      box-shadow: 0 30px 80px rgba(2,6,23,0.6);
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .login-title {
+      font-size: 40px;
+      font-weight: 900;
+      margin-bottom: 2rem;
+      color: #fff;
+      text-align: center;
+    }
+
+    .login-table {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .form-group {
+      margin: 0;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.8rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      font-size: 100%;
+    }
+
+    select, input[type="password"], input[type="text"] {
+      width: 100%;
+      font-size: 100%;
+      padding: 0.6rem 1.0rem;
+      min-height: 40px;
+      height: auto;
+      border-radius: 12px;
+      border: 2px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      font-family: inherit;
+      box-sizing: border-box;
+      appearance: none;
+    }
+
+    select option {
+      background: #0b1220;
+      color: #fff;
+      font-size: 100%;
+    }
+
+    .btn {
+      font-weight: 800;
+      background: linear-gradient(90deg, #4f46e5, #8b5cf6);
+      color: #fff;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 25px;
+      width: 100%;
+      margin-top: 1.5rem;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .btn:hover:not(:disabled) {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn.ghost {
+      background: transparent;
+      border: 2px solid rgba(255,255,255,0.2);
+      padding: 0.6rem 1.2rem;
+      width: auto;
+      font-size: 0.8rem;
+    }
+
+    .btn-small { padding: 0.5rem 1rem; font-size: 0.7rem; font-weight: 800; border-radius: 8px; border: none; cursor: pointer; transition: all 0.2s; }
+    .btn-action { background: linear-gradient(90deg, #10b981, #059669); color: #fff; }
+    .btn-action:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); }
+    .btn-disabled { background: #374151; color: #9ca3af; cursor: not-allowed; }
+
+    .notice { margin-top: 1.5rem; padding: 1rem; border-radius: 12px; font-size: 25px; text-align: center; }
+    .notice.error { background: rgba(239,68,68,0.1); color: #fca5a5; border: 2px solid rgba(239,68,68,0.3); }
+    .notice.success { background: rgba(16,185,129,0.1); color: #6ee7b7; border: 2px solid rgba(16,185,129,0.3); }
+
+    .progress-card { background: rgba(255,255,255,0.02); border-radius: 12px; padding: 2.5rem; box-shadow: 0 30px 80px rgba(2,6,23,0.6); display: none; }
+    .progress-card.active { display: block; }
+    .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1.5rem; }
+    .progress-stats { display: flex; gap: 2.5rem; }
+    .stat-item { display: flex; flex-direction: column; }
+    .stat-label { color: rgba(255,255,255,0.6); font-size: 0.7rem; margin-bottom: 0.3rem; font-weight: 700; }
+    .stat-value { font-size: 1.8rem; font-weight: 900; color: #fff; }
+
+    .table-container { overflow-x: auto; margin-top: 1.5rem; }
+    .progress-table { width: 100%; border-collapse: separate; border-spacing: 0 0.5rem; }
+    .progress-table thead th { text-align: left; padding: 1rem; font-weight: 900; color: rgba(255,255,255,0.7); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid rgba(255,255,255,0.1); }
+    .progress-table tbody tr { background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); transition: all 0.2s ease; }
+    .progress-table tbody tr:hover { background: linear-gradient(90deg, rgba(79,70,229,0.15), rgba(139,92,246,0.08)); transform: translateX(4px); }
+    .progress-table tbody td { padding: 1rem; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.8rem; vertical-align: top; }
+    .progress-table tbody td:first-child { border-left: 1px solid rgba(255,255,255,0.05); border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+    .progress-table tbody td:last-child { border-right: 1px solid rgba(255,255,255,0.05); border-top-right-radius: 12px; border-bottom-right-radius: 12px; text-align: center; }
+
+    .module-cell { font-weight: 900; color: #a5b4fc; font-size: 0.8rem; }
+    .activity-cell { font-weight: 700; color: #fff; font-size: 0.8rem; }
+    .datetime-cell { color: rgba(255,255,255,0.85); font-size: 0.7rem; font-weight: 600; }
+    .datetime-pending { color: rgba(255,255,255,0.4); font-style: italic; }
+
+    .status-badge { display: inline-block; padding: 0.4rem 0.8rem; border-radius: 999px; font-weight: 800; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .status-done { background: linear-gradient(90deg, #10b981, #059669); color: #fff; }
+    .status-pending { background: linear-gradient(90deg, #fef3c7, #fde68a); color: #92400e; }
+    .status-locked { background: linear-gradient(90deg, #ef4444, #dc2626); color: #fff; }
+    .status-empty { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); }
+    .status-na { background: linear-gradient(90deg, #6b7280, #4b5563); color: #fff; }
+
+    .controls { display: flex; gap: 1rem; align-items: center; }
+    .updating-row { opacity: 0.6; pointer-events: none; }
+
+    .progress-info { margin: 0; font-size: 1.2rem; color: #fff; font-weight: 900; }
+    .progress-subtitle { margin-top: 0.3rem; color: rgba(255,255,255,0.6); font-size: 0.7rem; font-weight: 500; }
+
+    .input-textarea { width: 100%; min-height: 84px; max-height: 200px; padding: 0.6rem; border-radius: 8px; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); color: #fff; resize: vertical; box-sizing: border-box; font-family: inherit; cursor: pointer; }
+    .word-count { margin-top: 0.25rem; font-size: 0.7rem; color: rgba(255,255,255,0.6); text-align: right; }
+
+    /* Modal styles: fullscreen modal for both mobile and desktop */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2,6,23,0.75);
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      z-index: 9999;
+      padding: 0;
+      backdrop-filter: blur(6px);
+    }
+    /* Modal takes full viewport */
+    .modal {
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: 0;
+      padding: 20px;
+      box-shadow: none;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .modal-header {
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      gap: 1rem;
+      padding: 8px 4px;
+    }
+    .modal-title { font-weight: 900; font-size: 1.1rem; color: #fff; }
+    .modal-controls { display:flex; gap: 8px; align-items:center; }
+
+    /* Font control UI */
+    .font-control {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      color: #cbd5e1;
+      font-weight: 700;
+      background: rgba(255,255,255,0.02);
+      padding: 6px 8px;
+      border-radius: 8px;
+    }
+    .font-control button {
+      background: transparent;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 6px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .font-control input[type="range"] {
+      width: 160px;
+      accent-color: #7c3aed;
+    }
+    .font-size-label {
+      min-width: 44px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    .modal-textarea {
+      width: 100%;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.3);
+      color: #fff;
+      font-size: 18px; /* default — will be overridden by JS to persisted size */
+      resize: none;
+      box-sizing: border-box;
+      font-family: inherit;
+      flex: 1 1 auto; /* fill remaining vertical space */
+      overflow: auto;
+      line-height: 1.4;
+    }
+    .modal-footer {
+      display:flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0;
+      gap: 12px;
+      padding: 8px 4px;
+      flex-wrap: wrap;
+    }
+    .modal-save { background: linear-gradient(90deg, #10b981, #059669); color: #fff; padding: 0.8rem 1.2rem; border-radius: 8px; font-weight: 800; border: none; cursor: pointer; }
+    .modal-cancel { background: transparent; border: 2px solid rgba(255,255,255,0.12); padding: 0.6rem 1rem; border-radius: 8px; color: #fff; cursor: pointer; font-weight: 700; }
+
+    @media (max-width: 1024px) {
+      html { font-size: 20px; }
+      body { padding: 20px; }
+      .login-card { padding: 2rem; }
+      .login-title { font-size: 32px; }
+      .form-group label { font-size: 100%; }
+      select, input[type="password"], .btn, .notice { font-size: 100%; }
+      .digital-clock { min-width: 200px; height: 56px; line-height: 56px; font-size: 22px; }
+    }
+
+    @media (max-width: 768px) {
+      html { font-size: 16px; }
+      body { padding: 15px; }
+      .header { flex-direction: column; gap: 1rem; text-align: center; }
+      .progress-header { flex-direction: column; }
+      .progress-stats { flex-direction: column; gap: 1rem; width: 100%; }
+      .table-container { overflow-x: scroll; }
+      .login-title { font-size: 28px; }
+      .form-group label { font-size: 100%; }
+      select, input[type="password"], .btn, .notice { font-size: 100%; }
+      .btn-small { padding: 0.4rem 0.8rem; font-size: 0.6rem; }
+      .digital-clock { min-width: auto; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Header -->
+    <div class="header">
+      <div>
+        <div class="title">📚 Packet Module</div>
+        <div class="student-name" id="headerStudentName"></div>
+      </div>
+      <div class="controls">
+        <div class="digital-clock" id="digitalClock">--:--:--</div>
+        <div class="ver">v114 GitHub</div>
+        <button class="btn ghost" id="logoutBtn" onclick="onLogout()" style="display:none">Logout</button>
+      </div>
+    </div>
+
+    <!-- Login Card -->
+    <div class="login-card" id="loginCard">
+      <h2 class="login-title">Student Login</h2>
+      <div class="login-table">
+        <div class="form-group">
+          <label for="nameSelect">Select Your Name</label>
+          <select id="nameSelect">
+            <option value="">Loading names...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="passwordField">Password</label>
+          <input id="passwordField" type="password" placeholder="Enter your password">
+        </div>
+        <button class="btn" id="loginBtn" onclick="onLogin()">Login</button>
+      </div>
+      <div id="authNotice"></div>
+    </div>
+
+    <!-- Progress Table -->
+    <div class="progress-card" id="progressCard">
+      <div class="progress-header">
+        <div>
+          <h2 class="progress-info">Your Progress</h2>
+          <p class="progress-subtitle">MODULE, ACTIVITY | STATUS | SUBMISSION | DATE UPDATED | ACTION</p>
+        </div>
+        <div class="progress-stats">
+          <div class="stat-item">
+            <span class="stat-label">COMPLETED</span>
+            <span class="stat-value" id="statCompleted">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">PENDING</span>
+            <span class="stat-value" id="statPending">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">TOTAL</span>
+            <span class="stat-value" id="statTotal">140</span>
+          </div>
+        </div>
+        <button class="btn ghost" onclick="refreshProgress()">Refresh</button>
+      </div>
+
+      <div class="table-container">
+        <table class="progress-table">
+          <thead>
+            <tr>
+              <th>MODULE</th>
+              <th>ACTIVITY</th>
+              <th>STATUS</th>
+              <th>SUBMISSION</th>
+              <th>DATE AND TIME</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody id="progressTableBody">
+            <!-- Rows will be populated here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================
+    // CONFIGURATION: Replace YOUR_DEPLOYMENT_ID with your actual Apps Script Web App URL
+    // ============================================
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxr114PpghrW8nrRbqpHP65OZQtWBYx1FFocmMPiWgGT-MwT6lN1c6pC-cHys6pf7hK/exec';
+    
+    // ============================================
+    // API Helper Functions
+    // ============================================
+    async function callAPI(action, params = {}) {
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: action,
+            ...params
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        
+        return await response.json();
+      } catch (error) {
+        console.error('API call failed:', error);
+        throw error;
+      }
+    }
+
+    async function callAPIGet(action) {
+      try {
+        const response = await fetch(`${API_URL}?action=${action}`);
+        
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        
+        return await response.json();
+      } catch (error) {
+        console.error('API call failed:', error);
+        throw error;
+      }
+    }
+
+    // ============================================
+    // Application State
+    // ============================================
+    let currentUser = null;
+    let currentPassword = '';
+    const MAX_WORDS = 1000;
+    let clockInterval = null;
+    let bootstrapDate = null;
+
+    const FONT_STORAGE_KEY = 'packet_modal_font_size';
+    const DEFAULT_FONT_PX = 18;
+
+    // ============================================
+    // Initialization
+    // ============================================
+    document.addEventListener('DOMContentLoaded', async () => {
+      loadNames();
+
+      // Boot the clock from authoritative server PH time
+      try {
+        const result = await callAPIGet('getTime');
+        startClockFromServer(result);
+      } catch (error) {
+        startClockLocal();
+      }
+    });
+
+    // ============================================
+    // Clock Functions
+    // ============================================
+    function startClockFromServer(result) {
+      const el = document.getElementById('digitalClock');
+      if (!result || !result.success || !result.data) {
+        startClockLocal();
+        return;
+      }
+
+      const d = result.data;
+      const iso = `${d.year}-${String(d.month).padStart(2,'0')}-${String(d.day).padStart(2,'0')}T${String(d.hour).padStart(2,'0')}:${String(d.minute).padStart(2,'0')}:${String(d.seconds).padStart(2,'0')}+08:00`;
+      bootstrapDate = new Date(iso);
+
+      if (clockInterval) clearInterval(clockInterval);
+
+      function tick() {
+        bootstrapDate = new Date(bootstrapDate.getTime() + 1000);
+        const h = String(bootstrapDate.getHours()).padStart(2, '0');
+        const m = String(bootstrapDate.getMinutes()).padStart(2, '0');
+        const s = String(bootstrapDate.getSeconds()).padStart(2, '0');
+        el.textContent = h + ':' + m + ':' + s;
+      }
+
+      tick();
+      clockInterval = setInterval(tick, 1000);
+    }
+
+    function startClockLocal() {
+      const el = document.getElementById('digitalClock');
+      if (clockInterval) clearInterval(clockInterval);
+      function tickLocal() {
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2,'0');
+        const m = String(now.getMinutes()).padStart(2,'0');
+        const s = String(now.getSeconds()).padStart(2,'0');
+        el.textContent = h + ':' + m + ':' + s;
+      }
+      tickLocal();
+      clockInterval = setInterval(tickLocal, 1000);
+    }
+
+    // ============================================
+    // Authentication Functions
+    // ============================================
+    async function loadNames() {
+      try {
+        const names = await callAPIGet('getNames');
+        onNamesLoaded(names);
+      } catch (error) {
+        onError(error);
+      }
+    }
+
+    function onNamesLoaded(names) {
+      const select = document.getElementById('nameSelect');
+      select.innerHTML = '<option value="">-- Select your name --</option>';
+      (names || []).forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.name;
+        option.textContent = item.name;
+        option.dataset.row = item.row;
+        select.appendChild(option);
+      });
+    }
+
+    async function onLogin() {
+      const name = document.getElementById('nameSelect').value;
+      const password = document.getElementById('passwordField').value;
+      
+      if (!name || !password) {
+        showNotice('Please select your name and enter password', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('loginBtn');
+      btn.disabled = true;
+      btn.textContent = 'Logging in...';
+
+      try {
+        const response = await callAPI('getUserData', { name, password });
+        onLoginSuccess(response);
+      } catch (error) {
+        onError(error);
+      }
+    }
+
+    function onLoginSuccess(response) {
+      const btn = document.getElementById('loginBtn');
+      btn.disabled = false;
+      btn.textContent = 'Login';
+
+      if (!response || !response.success) {
+        showNotice(response && response.message ? response.message : 'Invalid credentials', 'error');
+        document.getElementById('passwordField').value = '';
+        return;
+      }
+
+      currentUser = response;
+      currentPassword = document.getElementById('passwordField').value;
+      
+      showProgressView();
+      renderProgressTable();
+      showNotice('Login successful', 'success');
+    }
+
+    function showProgressView() {
+      document.getElementById('loginCard').style.display = 'none';
+      document.getElementById('progressCard').classList.add('active');
+      document.getElementById('logoutBtn').style.display = 'inline-block';
+      document.getElementById('headerStudentName').textContent = currentUser.name;
+    }
+
+    function onLogout() {
+      currentUser = null;
+      currentPassword = '';
+      document.getElementById('loginCard').style.display = 'block';
+      document.getElementById('progressCard').classList.remove('active');
+      document.getElementById('logoutBtn').style.display = 'none';
+      document.getElementById('passwordField').value = '';
+      document.getElementById('headerStudentName').textContent = '';
+      document.getElementById('authNotice').innerHTML = '';
+    }
+
+    async function refreshProgress() {
+      if (!currentUser) return;
+      
+      try {
+        const response = await callAPI('getUserData', {
+          name: currentUser.name,
+          password: currentPassword
+        });
+        
+        if (response && response.success) {
+          currentUser = response;
+          renderProgressTable();
+          showNotice('Progress refreshed', 'success');
+        }
+      } catch (error) {
+        onError(error);
+      }
+    }
+
+    // ============================================
+    // Helper Functions
+    // ============================================
+    function countWords(text) {
+      if (!text) return 0;
+      const matches = text.trim().split(/\s+/).filter(Boolean);
+      return matches.length;
+    }
+
+    function enforceWordLimitOnValue(val) {
+      if (!val) return '';
+      const words = val.trim().split(/\s+/).filter(Boolean);
+      if (words.length > MAX_WORDS) {
+        return words.slice(0, MAX_WORDS).join(' ');
+      }
+      return val;
+    }
+
+    function enforceWordLimit(textarea) {
+      const val = textarea.value || '';
+      const words = val.trim().split(/\s+/).filter(Boolean);
+      if (words.length > MAX_WORDS) {
+        textarea.value = words.slice(0, MAX_WORDS).join(' ');
+      }
+    }
+
+    function getPersistedFontSize() {
+      try {
+        const v = localStorage.getItem(FONT_STORAGE_KEY);
+        const n = parseInt(v, 10);
+        if (!isNaN(n) && n >= 12 && n <= 40) return n;
+      } catch (e) {}
+      return DEFAULT_FONT_PX;
+    }
+
+    function setPersistedFontSize(px) {
+      try {
+        localStorage.setItem(FONT_STORAGE_KEY, String(px));
+      } catch (e) {}
+    }
+
+    // ============================================
+    // Modal Editor Functions
+    // ============================================
+    function createModal() {
+      const overlay = document.createElement('div');
+      overlay.className = 'modal-overlay';
+      overlay.tabIndex = 0;
+
+      const modal = document.createElement('div');
+      modal.className = 'modal';
+
+      const header = document.createElement('div');
+      header.className = 'modal-header';
+
+      const title = document.createElement('div');
+      title.className = 'modal-title';
+      title.textContent = 'Edit input';
+
+      const controls = document.createElement('div');
+      controls.className = 'modal-controls';
+
+      const fontControl = document.createElement('div');
+      fontControl.className = 'font-control';
+
+      const minusBtn = document.createElement('button');
+      minusBtn.type = 'button';
+      minusBtn.title = 'Decrease font size';
+      minusBtn.textContent = 'A-';
+
+      const plusBtn = document.createElement('button');
+      plusBtn.type = 'button';
+      plusBtn.title = 'Increase font size';
+      plusBtn.textContent = 'A+';
+
+      const resetBtn = document.createElement('button');
+      resetBtn.type = 'button';
+      resetBtn.title = 'Reset font size';
+      resetBtn.textContent = 'Reset';
+
+      const range = document.createElement('input');
+      range.type = 'range';
+      range.min = 12;
+      range.max = 40;
+      range.step = 1;
+
+      const label = document.createElement('div');
+      label.className = 'font-size-label';
+      label.textContent = (getPersistedFontSize() || DEFAULT_FONT_PX) + ' px';
+
+      fontControl.appendChild(minusBtn);
+      fontControl.appendChild(range);
+      fontControl.appendChild(plusBtn);
+      fontControl.appendChild(label);
+      fontControl.appendChild(resetBtn);
+
+      controls.appendChild(fontControl);
+
+      header.appendChild(title);
+      header.appendChild(controls);
+
+      const textarea = document.createElement('textarea');
+      textarea.className = 'modal-textarea';
+      textarea.placeholder = 'Type your response here (max ' + MAX_WORDS + ' words)';
+
+      const footer = document.createElement('div');
+      footer.className = 'modal-footer';
+
+      const wc = document.createElement('div');
+      wc.className = 'word-count';
+      wc.style.color = '#cbd5e1';
+      wc.textContent = '0 / ' + MAX_WORDS + ' words';
+
+      const btns = document.createElement('div');
+      btns.style.display = 'flex';
+      btns.style.gap = '8px';
+
+      const saveBtn = document.createElement('button');
+      saveBtn.className = 'modal-save';
+      saveBtn.textContent = 'Save';
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.className = 'modal-cancel';
+      cancelBtn.textContent = 'Cancel';
+
+      btns.appendChild(saveBtn);
+      btns.appendChild(cancelBtn);
+
+      footer.appendChild(wc);
+      footer.appendChild(btns);
+
+      modal.appendChild(header);
+      modal.appendChild(textarea);
+      modal.appendChild(footer);
+      overlay.appendChild(modal);
+
+      const persisted = getPersistedFontSize();
+      range.value = persisted;
+      label.textContent = persisted + ' px';
+      textarea.style.fontSize = persisted + 'px';
+
+      minusBtn.addEventListener('click', () => {
+        let v = parseInt(range.value, 10) - 1;
+        if (v < parseInt(range.min, 10)) v = parseInt(range.min, 10);
+        range.value = v;
+        range.dispatchEvent(new Event('input'));
+      });
+      plusBtn.addEventListener('click', () => {
+        let v = parseInt(range.value, 10) + 1;
+        if (v > parseInt(range.max, 10)) v = parseInt(range.max, 10);
+        range.value = v;
+        range.dispatchEvent(new Event('input'));
+      });
+      resetBtn.addEventListener('click', () => {
+        range.value = DEFAULT_FONT_PX;
+        range.dispatchEvent(new Event('input'));
+      });
+      range.addEventListener('input', () => {
+        const v = parseInt(range.value, 10);
+        textarea.style.fontSize = v + 'px';
+        label.textContent = v + ' px';
+        setPersistedFontSize(v);
+      });
+
+      return {
+        overlay,
+        modal,
+        title,
+        textarea,
+        wc,
+        saveBtn,
+        cancelBtn
+      };
+    }
+
+    function openInputModal(smallTextarea, moduleNumber, activityName, activityIndex, activityObj) {
+      if (!smallTextarea) return;
+      if (smallTextarea.disabled) return;
+
+      const modalParts = createModal();
+      modalParts.title.textContent = 'Module ' + moduleNumber + ' — ' + (activityName || 'Activity');
+      modalParts.textarea.value = smallTextarea.value || '';
+      modalParts.textarea.value = enforceWordLimitOnValue(modalParts.textarea.value);
+      modalParts.wc.textContent = countWords(modalParts.textarea.value) + ' / ' + MAX_WORDS + ' words';
+
+      document.body.appendChild(modalParts.overlay);
+
+      const origin = smallTextarea;
+
+      setTimeout(() => {
+        modalParts.textarea.focus();
+        modalParts.textarea.selectionStart = modalParts.textarea.selectionEnd = modalParts.textarea.value.length;
+      }, 50);
+
+      modalParts.textarea.addEventListener('input', () => {
+        enforceWordLimit(modalParts.textarea);
+        modalParts.wc.textContent = countWords(modalParts.textarea.value) + ' / ' + MAX_WORDS + ' words';
+      });
+
+      function closeModal(apply) {
+        if (modalParts.overlay && modalParts.overlay.parentNode) {
+          modalParts.overlay.parentNode.removeChild(modalParts.overlay);
+        }
+        if (apply) {
+          const newVal = modalParts.textarea.value;
+          origin.value = newVal;
+          const wcEl = origin.nextElementSibling;
+          if (wcEl && wcEl.classList && wcEl.classList.contains('word-count')) {
+            wcEl.textContent = countWords(newVal) + ' / ' + MAX_WORDS + ' words';
+          }
+        }
+        try {
+          origin.focus();
+        } catch (e) {}
+      }
+
+      modalParts.saveBtn.addEventListener('click', () => {
+        closeModal(true);
+      });
+
+      modalParts.cancelBtn.addEventListener('click', () => {
+        closeModal(false);
+      });
+
+      modalParts.overlay.addEventListener('click', (ev) => {
+        if (ev.target === modalParts.overlay) {
+          closeModal(false);
+        }
+      });
+
+      function onKeyDown(ev) {
+        if (ev.key === 'Escape') {
+          ev.preventDefault();
+          closeModal(false);
+          window.removeEventListener('keydown', onKeyDown);
+        } else if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 's') {
+          ev.preventDefault();
+          closeModal(true);
+        }
+      }
+      window.addEventListener('keydown', onKeyDown);
+    }
+
+    // ============================================
+    // Progress Table Rendering
+    // ============================================
+    function renderProgressTable() {
+      if (!currentUser || !currentUser.modules) return;
+
+      const tbody = document.getElementById('progressTableBody');
+      tbody.innerHTML = '';
+
+      let totalCompleted = 0;
+      let totalPending = 0;
+      let totalActivities = 0;
+
+      currentUser.modules.forEach(module => {
+        module.activities.forEach((activity, index) => {
+          totalActivities++;
+          
+          const row = document.createElement('tr');
+          row.setAttribute('data-module', module.module);
+          row.setAttribute('data-activity-index', index);
+          row.setAttribute('data-col', activity.col || '');
+          
+          const moduleCell = document.createElement('td');
+          moduleCell.className = 'module-cell';
+          if (index === 0) {
+            moduleCell.textContent = 'MODULE ' + module.module;
+          } else {
+            moduleCell.textContent = '';
+          }
+          row.appendChild(moduleCell);
+
+          const activityCell = document.createElement('td');
+          activityCell.className = 'activity-cell';
+          activityCell.textContent = activity.name;
+          row.appendChild(activityCell);
+
+          const statusCell = document.createElement('td');
+          const badge = document.createElement('span');
+          badge.className = 'status-badge';
+          
+          const status = (activity.status || '').toUpperCase();
+          let isPending = false;
+          let isLocked = false;
+          let isCompleted = false;
+          let isNotApplicable = false;
+          
+          if (status === 'COMPLETED') {
+            badge.className += ' status-done';
+            badge.textContent = 'COMPLETED';
+            totalCompleted++;
+            isCompleted = true;
+          } else if (status === 'LOCKED') {
+            badge.className += ' status-locked';
+            badge.textContent = 'LOCKED';
+            isLocked = true;
+          } else if (status === 'NOT APPLICABLE' || status === 'N/A' || status === 'NA') {
+            badge.className += ' status-na';
+            badge.textContent = 'NOT APPLICABLE';
+            isNotApplicable = true;
+          } else if (status === 'EMPTY' || !status) {
+            badge.className += ' status-empty';
+            badge.textContent = 'NOT STARTED';
+            totalPending++;
+          } else {
+            badge.className += ' status-pending';
+            badge.textContent = 'PENDING';
+            totalPending++;
+            isPending = true;
+          }
+          
+          statusCell.appendChild(badge);
+          row.appendChild(statusCell);
+
+          const inputCell = document.createElement('td');
+          const textarea = document.createElement('textarea');
+          textarea.className = 'input-textarea';
+          textarea.maxLength = 100000;
+          textarea.value = activity.inputText || '';
+          textarea.placeholder = 'Enter notes / response (max 1000 words)';
+          textarea.readOnly = true;
+
+          textarea.oninput = function() {
+            enforceWordLimit(this);
+            const wc = countWords(this.value);
+            const wcSpan = this.nextElementSibling;
+            if (wcSpan) wcSpan.textContent = wc + ' / ' + MAX_WORDS + ' words';
+          };
+
+          textarea.addEventListener('click', (e) => {
+            if (textarea.disabled) return;
+            openInputModal(textarea, module.module, activity.name, index, activity);
+            e.stopPropagation();
+          });
+
+          const wc = document.createElement('div');
+          wc.className = 'word-count';
+          wc.textContent = countWords(textarea.value) + ' / ' + MAX_WORDS + ' words';
+
+          if (isCompleted || isLocked || isNotApplicable) {
+            textarea.disabled = true;
+            textarea.title = 'Disabled: activity is ' + badge.textContent;
+          } else {
+            textarea.style.cursor = 'pointer';
+          }
+
+          inputCell.appendChild(textarea);
+          inputCell.appendChild(wc);
+          row.appendChild(inputCell);
+
+          const datetimeCell = document.createElement('td');
+          datetimeCell.className = 'datetime-cell';
+          
+          if (activity.rawTimestamp && String(activity.rawTimestamp).trim() !== '') {
+            datetimeCell.textContent = activity.rawTimestamp;
+          } else {
+            datetimeCell.textContent = 'PENDING';
+            datetimeCell.classList.add('datetime-pending');
+          }
+          
+          row.appendChild(datetimeCell);
+
+          const actionCell = document.createElement('td');
+          const actionBtn = document.createElement('button');
+          actionBtn.className = 'btn-small';
+          
+          if (isCompleted || isLocked || isNotApplicable) {
+            actionBtn.className += ' btn-disabled';
+            actionBtn.disabled = true;
+            if (isCompleted) actionBtn.textContent = 'COMPLETED';
+            else if (isLocked) actionBtn.textContent = 'LOCKED';
+            else if (isNotApplicable) actionBtn.textContent = 'NOT APPLICABLE';
+          } else {
+            actionBtn.className += ' btn-action';
+            actionBtn.textContent = 'MARK AS DONE';
+            actionBtn.onclick = () => markAsDone(module.module, index, activity, textarea);
+          }
+          
+          actionCell.appendChild(actionBtn);
+          row.appendChild(actionCell);
+
+          tbody.appendChild(row);
+        });
+      });
+
+      document.getElementById('statCompleted').textContent = totalCompleted;
+      document.getElementById('statPending').textContent = totalPending;
+      document.getElementById('statTotal').textContent = totalActivities;
+    }
+
+    // ============================================
+    // Update Activity Status
+    // ============================================
+    async function markAsDone(moduleNumber, activityIndex, activity, textareaEl) {
+      if (!currentUser) return;
+      
+      const confirmed = confirm(
+        'Mark "' + activity.name + '" in Module ' + moduleNumber + ' as DONE?\n\n' +
+        'This will update the status to COMPLETED and disable further editing of the input text.'
+      );
+      
+      if (!confirmed) return;
+
+      const row = currentUser.row;
+      const col = activity.col;
+      const inputText = textareaEl ? textareaEl.value : '';
+
+      const tbody = document.getElementById('progressTableBody');
+      const rows = tbody.querySelectorAll('tr');
+      let targetRow = null;
+      
+      rows.forEach(r => {
+        if (r.getAttribute('data-module') == moduleNumber && 
+            r.getAttribute('data-activity-index') == activityIndex) {
+          targetRow = r;
+          r.classList.add('updating-row');
+          const btn = r.querySelector('.btn-action');
+          if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'UPDATING...';
+          }
+        }
+      });
+
+      try {
+        const result = await callAPI('updateActivity', {
+          row: row,
+          colLetter: col,
+          newValue: 'DONE',
+          inputText: inputText
+        });
+        
+        if (result && result.success) {
+          const mod = currentUser.modules.find(m => m.module === moduleNumber);
+          if (mod && mod.activities[activityIndex]) {
+            mod.activities[activityIndex].rawValue = 'DONE';
+            mod.activities[activityIndex].rawTimestamp = result.timestamp || new Date().toString();
+            mod.activities[activityIndex].status = 'COMPLETED';
+            mod.activities[activityIndex].inputText = inputText;
+          }
+          renderProgressTable();
+          showNotice('Activity marked as DONE successfully!', 'success');
+        } else {
+          if (targetRow) targetRow.classList.remove('updating-row');
+          showNotice(result && result.message ? result.message : 'Failed to update activity', 'error');
+        }
+      } catch (error) {
+        if (targetRow) targetRow.classList.remove('updating-row');
+        console.error(error);
+        showNotice('Error updating activity: ' + (error && error.message ? error.message : String(error)), 'error');
+      }
+    }
+
+    // ============================================
+    // Notifications
+    // ============================================
+    function showNotice(message, type) {
+      const notice = document.getElementById('authNotice');
+      notice.className = 'notice ' + type;
+      notice.textContent = message;
+      
+      setTimeout(() => {
+        notice.textContent = '';
+        notice.className = 'notice';
+      }, 5000);
+    }
+
+    function onError(error) {
+      console.error(error);
+      showNotice('An error occurred. Please try again.', 'error');
+      const btn = document.getElementById('loginBtn');
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Login';
+      }
+    }
+  </script>
+</body>
+</html>
