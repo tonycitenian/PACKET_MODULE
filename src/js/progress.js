@@ -13,7 +13,7 @@ function renderProgressTable() {
   if (!currentUser || !currentUser.modules) return;
 
   const tbody = document.getElementById('progressTableBody');
-  const fragment = document.createDocumentFragment();
+  tbody.innerHTML = '';
 
   let totalCompleted = 0;
   let totalPending = 0;

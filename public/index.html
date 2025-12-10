@@ -170,47 +170,6 @@ body {
    Reusable Components (Buttons, Badges, Notices)
    ============================================ */
 
-/* Loading Spinner Overlay */
-.loading-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(7, 20, 40, 0.95);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-  backdrop-filter: blur(8px);
-}
-
-.loading-spinner {
-  width: 60px;
-  height: 60px;
-  border: 4px solid rgba(255, 255, 255, 0.1);
-  border-top-color: var(--primary-color);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.loading-message {
-  margin-top: 1.5rem;
-  color: var(--text-primary);
-  font-size: 1rem;
-  font-weight: 700;
-  text-align: center;
-}
-
-.loading-submessage {
-  margin-top: 0.5rem;
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  text-align: center;
-}
-
 /* Buttons */
 .btn {
   font-weight: 800;
@@ -326,12 +285,6 @@ body {
   background: rgba(16, 185, 129, 0.1);
   color: #6ee7b7;
   border: 2px solid rgba(16, 185, 129, 0.3);
-}
-
-.notice.info {
-  background: rgba(79, 70, 229, 0.1);
-  color: #c7d2fe;
-  border: 2px solid rgba(79, 70, 229, 0.3);
 }
 
 
@@ -1519,49 +1472,6 @@ async function callAPIGet(action) {
  */
 
 /**
- * Show loading overlay with spinner
- * @param {string} message - Main loading message
- * @param {string} submessage - Optional secondary message
- */
-function showLoading(message = 'Loading...', submessage = '') {
-  // Remove existing loader if present
-  hideLoading();
-  
-  const overlay = document.createElement('div');
-  overlay.id = 'loadingOverlay';
-  overlay.className = 'loading-overlay';
-  
-  const spinner = document.createElement('div');
-  spinner.className = 'loading-spinner';
-  
-  const msgEl = document.createElement('div');
-  msgEl.className = 'loading-message';
-  msgEl.textContent = message;
-  
-  overlay.appendChild(spinner);
-  overlay.appendChild(msgEl);
-  
-  if (submessage) {
-    const subEl = document.createElement('div');
-    subEl.className = 'loading-submessage';
-    subEl.textContent = submessage;
-    overlay.appendChild(subEl);
-  }
-  
-  document.body.appendChild(overlay);
-}
-
-/**
- * Hide loading overlay
- */
-function hideLoading() {
-  const overlay = document.getElementById('loadingOverlay');
-  if (overlay) {
-    overlay.remove();
-  }
-}
-
-/**
  * Count words in text
  * @param {string} text - Text to count
  * @returns {number} Word count
@@ -1948,16 +1858,11 @@ async function onLogin() {
   const btn = document.getElementById('loginBtn');
   btn.disabled = true;
   btn.textContent = 'Logging in...';
-  
-  // Show loading overlay
-  showLoading('Connecting to server...', 'This may take 10-30 seconds');
 
   try {
     const response = await callAPI('getUserData', { name, password });
     onLoginSuccess(response);
   } catch (error) {
-    hideLoading();
-    
     const btn = document.getElementById('loginBtn');
     btn.disabled = false;
     btn.textContent = 'Login';
@@ -1983,8 +1888,6 @@ async function onLogin() {
  * @param {object} response - Login response from server
  */
 function onLoginSuccess(response) {
-  hideLoading();
-  
   const btn = document.getElementById('loginBtn');
   btn.disabled = false;
   btn.textContent = 'Login';
@@ -2033,8 +1936,6 @@ function onLogout() {
 async function refreshProgress() {
   if (!currentUser) return;
   
-  showLoading('Refreshing progress...', 'Fetching latest data');
-  
   try {
     const response = await callAPI('getUserData', {
       name: currentUser.name,
@@ -2048,8 +1949,6 @@ async function refreshProgress() {
     }
   } catch (error) {
     onError(error);
-  } finally {
-    hideLoading();
   }
 }
 
@@ -2294,7 +2193,7 @@ function renderProgressTable() {
   if (!currentUser || !currentUser.modules) return;
 
   const tbody = document.getElementById('progressTableBody');
-  const fragment = document.createDocumentFragment();
+  tbody.innerHTML = '';
 
   let totalCompleted = 0;
   let totalPending = 0;
