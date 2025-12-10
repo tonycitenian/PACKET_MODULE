@@ -39,6 +39,7 @@ const JS_FILES = [
   'auth.js',
   'modal.js',
   'progress.js',
+  'pwa.js',
   'main.js'
 ];
 
