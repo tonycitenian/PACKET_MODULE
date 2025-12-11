@@ -503,6 +503,8 @@ select option {
 .progress-table tbody tr {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
   transition: all var(--transition-fast);
+  /* Performance: Isolate layout and paint calculations */
+  contain: layout paint;
 }
 
 .progress-table tbody tr:hover {
@@ -599,6 +601,9 @@ select option {
   border-radius: var(--radius-md);
   padding: var(--spacing-md);
   transition: all var(--transition-fast);
+  /* Performance: Isolate paint/layout + skip off-screen rendering */
+  contain: layout style paint;
+  content-visibility: auto;
 }
 
 .progress-card-item:active {
@@ -882,6 +887,8 @@ select option {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  /* Performance: Isolate modal rendering */
+  contain: layout style paint;
 }
 
 .modal-header {
@@ -1761,6 +1768,33 @@ function onError(error) {
   }
 }
 
+/**
+ * Debounce function calls for performance
+ * @param {Function} func - Function to debounce
+ * @param {number} wait - Milliseconds to wait
+ * @returns {Function} Debounced function
+ */
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+/**
+ * Add passive scroll listener for better performance
+ * @param {Element} element - Element to attach listener to
+ * @param {Function} handler - Scroll handler function
+ */
+function addPassiveScrollListener(element, handler) {
+  element.addEventListener('scroll', handler, { passive: true });
+}
+
 
 // clock.js
 /**
@@ -2311,9 +2345,14 @@ function openInputModal(smallTextarea, moduleNumber, activityName, activityIndex
     modalParts.textarea.selectionStart = modalParts.textarea.selectionEnd = modalParts.textarea.value.length;
   }, 50);
 
+  // Debounced word count for better performance during typing
+  const updateWordCount = debounce(() => {
+    modalParts.wc.textContent = countWords(modalParts.textarea.value) + ' / ' + MAX_WORDS + ' words';
+  }, 150);
+
   modalParts.textarea.addEventListener('input', () => {
     enforceWordLimit(modalParts.textarea);
-    modalParts.wc.textContent = countWords(modalParts.textarea.value) + ' / ' + MAX_WORDS + ' words';
+    updateWordCount();
   });
 
   function closeModal(apply) {
@@ -3075,13 +3114,14 @@ function initScrollTopButton() {
   const scrollBtn = document.querySelector('.scroll-top-btn');
   if (!scrollBtn) return;
 
+  // Passive listener for better scroll performance
   window.addEventListener('scroll', () => {
     if (window.scrollY > 300) {
       scrollBtn.classList.add('visible');
     } else {
       scrollBtn.classList.remove('visible');
     }
-  });
+  }, { passive: true });
 
   scrollBtn.addEventListener('click', scrollToTop);
 }
@@ -3100,18 +3140,16 @@ function initMobileFeatures() {
   }
 }
 
-// Re-render on window resize
-let resizeTimer;
-window.addEventListener('resize', () => {
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => {
-    if (isMobileDevice()) {
-      document.body.classList.add('mobile-nav-active');
-    } else {
-      document.body.classList.remove('mobile-nav-active');
-    }
-  }, 250);
-});
+// Re-render on window resize (debounced for performance)
+const handleResize = debounce(() => {
+  if (isMobileDevice()) {
+    document.body.classList.add('mobile-nav-active');
+  } else {
+    document.body.classList.remove('mobile-nav-active');
+  }
+}, 250);
+
+window.addEventListener('resize', handleResize, { passive: true });
 
 
 // pwa.js
