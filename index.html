@@ -760,6 +760,7 @@ select option {
   align-items: center;
   gap: var(--spacing-md);
   padding: 8px 4px;
+  flex-wrap: wrap;
 }
 
 .modal-title {
@@ -1032,18 +1033,46 @@ select option {
   }
 
   /* Modal Editor */
-  .modal-header h3 {
-    font-size: 1.2rem;
-  }
-
-  .font-controls {
+  .modal-header {
     gap: var(--spacing-sm);
   }
 
-  .font-btn {
-    width: 36px;
-    height: 36px;
+  .modal-title {
     font-size: 1rem;
+    flex: 0 0 auto;
+  }
+
+  .modal-controls {
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .font-control {
+    order: 2;
+    width: 100%;
+    justify-content: center;
+    padding: 8px 6px;
+  }
+
+  .font-control input[type="range"] {
+    width: 120px;
+  }
+
+  .font-size-label {
+    min-width: 36px;
+    font-size: 0.85rem;
+  }
+
+  .font-control button {
+    padding: 4px 6px;
+    font-size: 0.9rem;
+  }
+
+  .modal-save,
+  .modal-cancel {
+    order: 1;
   }
 
   .modal-content textarea {
@@ -1112,14 +1141,22 @@ select option {
     padding: 0.4rem 0.8rem;
   }
 
-  .modal-header h3 {
-    font-size: 1rem;
+  .modal-title {
+    font-size: 0.9rem;
   }
 
-  .font-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 0.9rem;
+  .font-control input[type="range"] {
+    width: 100px;
+  }
+
+  .font-control button {
+    padding: 4px 6px;
+    font-size: 0.85rem;
+  }
+
+  .font-size-label {
+    min-width: 32px;
+    font-size: 0.8rem;
   }
 }
 
