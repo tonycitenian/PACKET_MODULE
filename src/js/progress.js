@@ -20,11 +20,15 @@ function renderProgressTable() {
   let totalActivities = 0;
 
   currentUser.modules.forEach(module => {
+    if (!module || !module.activities) return; // Skip if module is invalid
+    
     module.activities.forEach((activity, index) => {
+      if (!activity) return; // Skip if activity is invalid
+      
       totalActivities++;
       
       const row = document.createElement('tr');
-      row.setAttribute('data-module', module.module);
+      row.setAttribute('data-module', module.module || '');
       row.setAttribute('data-activity-index', index);
       row.setAttribute('data-col', activity.col || '');
       
@@ -32,7 +36,8 @@ function renderProgressTable() {
       const moduleCell = document.createElement('td');
       moduleCell.className = 'module-cell';
       if (index === 0) {
-        moduleCell.textContent = 'MODULE ' + module.module;
+        const moduleNum = module.module || '?';
+        moduleCell.textContent = 'MODULE ' + moduleNum;
       } else {
         moduleCell.textContent = '';
       }
@@ -41,7 +46,7 @@ function renderProgressTable() {
       // Activity cell
       const activityCell = document.createElement('td');
       activityCell.className = 'activity-cell';
-      activityCell.textContent = activity.name;
+      activityCell.textContent = activity.name || 'Unknown Activity';
       row.appendChild(activityCell);
 
       // Status cell
