@@ -557,6 +557,7 @@ select option {
 .updating-row {
   opacity: 0.6;
   pointer-events: none;
+  position: relative;
 }
 
 .input-textarea {
@@ -666,6 +667,67 @@ select option {
 .card-updating {
   opacity: 0.6;
   pointer-events: none;
+  position: relative;
+}
+
+/* Loading State - PM Badge Overlay */
+.loading-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.pm-badge {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 1.2rem;
+  color: white;
+  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.6);
+  animation: pmPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pmPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* Button Loading State */
+.btn-loading {
+  opacity: 0.7;
+  cursor: wait !important;
+  pointer-events: none;
+}
+
+/* Success Flash Animation */
+.success-flash {
+  animation: successFlash 0.6s ease-out;
+}
+
+@keyframes successFlash {
+  0% {
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.3), rgba(5, 150, 105, 0.3));
+  }
+  50% {
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.5), rgba(5, 150, 105, 0.5));
+  }
+  100% {
+    background: transparent;
+  }
 }
 
 /* Collapsible Section */
@@ -2422,22 +2484,73 @@ async function markAsDone(moduleNumber, activityIndex, activity, textareaEl) {
   const col = activity.col;
   const inputText = textareaEl ? textareaEl.value : '';
 
+  // Find and update desktop table row
   const tbody = document.getElementById('progressTableBody');
   const rows = tbody.querySelectorAll('tr');
   let targetRow = null;
+  let targetButton = null;
+  let pmBadgeDesktop = null;
   
   rows.forEach(r => {
     if (r.getAttribute('data-module') == moduleNumber && 
         r.getAttribute('data-activity-index') == activityIndex) {
       targetRow = r;
       r.classList.add('updating-row');
+      
+      // Add PM badge overlay to desktop row
+      pmBadgeDesktop = document.createElement('div');
+      pmBadgeDesktop.className = 'loading-overlay';
+      pmBadgeDesktop.innerHTML = '<div class="pm-badge">PM</div>';
+      r.style.position = 'relative';
+      r.appendChild(pmBadgeDesktop);
+      
       const btn = r.querySelector('.btn-action');
       if (btn) {
+        targetButton = btn;
         btn.disabled = true;
-        btn.textContent = 'UPDATING...';
+        btn.classList.add('btn-loading');
+        btn.textContent = '🔄 SAVING...';
       }
     }
   });
+
+  // Find and update mobile card
+  const cardsContainer = document.getElementById('progressCardsContainer');
+  let targetCard = null;
+  let targetCardButtons = [];
+  let pmBadgeMobile = null;
+  
+  if (cardsContainer) {
+    const cards = cardsContainer.querySelectorAll('.progress-card-item');
+    cards.forEach(card => {
+      if (card.getAttribute('data-module') == moduleNumber && 
+          card.getAttribute('data-activity-index') == activityIndex) {
+        targetCard = card;
+        card.classList.add('card-updating');
+        
+        // Add PM badge overlay to mobile card
+        pmBadgeMobile = document.createElement('div');
+        pmBadgeMobile.className = 'loading-overlay';
+        pmBadgeMobile.innerHTML = '<div class="pm-badge">PM</div>';
+        card.style.position = 'relative';
+        card.appendChild(pmBadgeMobile);
+        
+        // Update all buttons in card footer
+        const buttons = card.querySelectorAll('.btn-small');
+        buttons.forEach(btn => {
+          targetCardButtons.push(btn);
+          btn.disabled = true;
+          btn.classList.add('btn-loading');
+          if (btn.classList.contains('btn-action')) {
+            btn.textContent = '🔄 SAVING...';
+          }
+        });
+      }
+    });
+  }
+
+  // Minimum delay to prevent flash on fast networks
+  const startTime = Date.now();
 
   try {
     const result = await callAPI('updateActivity', {
@@ -2447,6 +2560,12 @@ async function markAsDone(moduleNumber, activityIndex, activity, textareaEl) {
       inputText: inputText
     });
     
+    // Ensure minimum 300ms delay
+    const elapsed = Date.now() - startTime;
+    if (elapsed < 300) {
+      await new Promise(resolve => setTimeout(resolve, 300 - elapsed));
+    }
+    
     if (result && result.success) {
       const mod = currentUser.modules.find(m => m.module === moduleNumber);
       if (mod && mod.activities[activityIndex]) {
@@ -2455,14 +2574,68 @@ async function markAsDone(moduleNumber, activityIndex, activity, textareaEl) {
         mod.activities[activityIndex].status = 'COMPLETED';
         mod.activities[activityIndex].inputText = inputText;
       }
+      
+      // Show success flash on desktop row
+      if (targetRow) {
+        targetRow.classList.remove('updating-row');
+        targetRow.classList.add('success-flash');
+        if (pmBadgeDesktop) pmBadgeDesktop.remove();
+        setTimeout(() => targetRow.classList.remove('success-flash'), 600);
+      }
+      
+      // Show success flash on mobile card
+      if (targetCard) {
+        targetCard.classList.remove('card-updating');
+        targetCard.classList.add('success-flash');
+        if (pmBadgeMobile) pmBadgeMobile.remove();
+        setTimeout(() => targetCard.classList.remove('success-flash'), 600);
+      }
+      
+      // Re-render to update UI
       renderProgressTable();
-      showNotice('Activity marked as DONE successfully!', 'success');
+      showNotice('✓ Activity marked as DONE successfully!', 'success');
     } else {
-      if (targetRow) targetRow.classList.remove('updating-row');
+      // Remove loading states on error
+      if (targetRow) {
+        targetRow.classList.remove('updating-row');
+        if (pmBadgeDesktop) pmBadgeDesktop.remove();
+      }
+      if (targetCard) {
+        targetCard.classList.remove('card-updating');
+        if (pmBadgeMobile) pmBadgeMobile.remove();
+      }
+      if (targetButton) {
+        targetButton.disabled = false;
+        targetButton.classList.remove('btn-loading');
+        targetButton.textContent = 'MARK AS DONE';
+      }
+      targetCardButtons.forEach(btn => {
+        btn.disabled = false;
+        btn.classList.remove('btn-loading');
+      });
+      
       showNotice(result && result.message ? result.message : 'Failed to update activity', 'error');
     }
   } catch (error) {
-    if (targetRow) targetRow.classList.remove('updating-row');
+    // Remove loading states on error
+    if (targetRow) {
+      targetRow.classList.remove('updating-row');
+      if (pmBadgeDesktop) pmBadgeDesktop.remove();
+    }
+    if (targetCard) {
+      targetCard.classList.remove('card-updating');
+      if (pmBadgeMobile) pmBadgeMobile.remove();
+    }
+    if (targetButton) {
+      targetButton.disabled = false;
+      targetButton.classList.remove('btn-loading');
+      targetButton.textContent = 'MARK AS DONE';
+    }
+    targetCardButtons.forEach(btn => {
+      btn.disabled = false;
+      btn.classList.remove('btn-loading');
+    });
+    
     console.error(error);
     showNotice('Error updating activity: ' + (error && error.message ? error.message : String(error)), 'error');
   }
