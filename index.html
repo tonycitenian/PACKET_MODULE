@@ -2396,9 +2396,8 @@ function renderProgressTable() {
   document.getElementById('statTotal').textContent = totalActivities;
   
   // Render mobile cards
-  const cardData = buildCardData();
   if (typeof renderProgressCards === 'function') {
-    renderProgressCards(cardData);
+    renderProgressCards();
   }
 }
 
@@ -2501,47 +2500,112 @@ function buildCardData() {
 // Render progress data as mobile cards
 function renderProgressCards(data) {
   const cardsContainer = document.getElementById('progressCardsContainer');
-  if (!cardsContainer) return;
+  if (!cardsContainer || !currentUser || !currentUser.modules) return;
 
   cardsContainer.innerHTML = '';
 
-  data.forEach((row, index) => {
-    const card = document.createElement('div');
-    card.className = 'progress-card-item';
-    card.dataset.rowIndex = index;
+  // Track activity index across modules
+  let globalIndex = 0;
 
-    const statusBadge = row.Status === 'Done' 
-      ? '<span class="stat-badge success">✓ Done</span>'
-      : '<span class="stat-badge pending">⏱ Pending</span>';
+  currentUser.modules.forEach(module => {
+    module.activities.forEach((activity, activityIndex) => {
+      const card = document.createElement('div');
+      card.className = 'progress-card-item';
+      card.dataset.module = module.module;
+      card.dataset.activityIndex = activityIndex;
 
-    const dateTime = row.Date 
-      ? `<div class="card-datetime">📅 ${row.Date}</div>`
-      : '<div class="card-datetime card-datetime-pending">Not submitted yet</div>';
+      const status = (activity.status || '').toUpperCase();
+      const isCompleted = status === 'COMPLETED';
+      const isLocked = status === 'LOCKED';
+      const isNotApplicable = status === 'NOT APPLICABLE' || status === 'N/A' || status === 'NA';
+      const isPending = !isCompleted && !isLocked && !isNotApplicable;
 
-    const submissionText = row.Submission 
-      ? `<div class="card-submission">${row.Submission.substring(0, 80)}${row.Submission.length > 80 ? '...' : ''}</div>`
-      : '<div class="card-submission" style="color: rgba(255,255,255,0.4)">No submission</div>';
+      let statusBadge = '';
+      if (isCompleted) {
+        statusBadge = '<span class="status-badge status-done">✓ COMPLETED</span>';
+      } else if (isLocked) {
+        statusBadge = '<span class="status-badge status-locked">🔒 LOCKED</span>';
+      } else if (isNotApplicable) {
+        statusBadge = '<span class="status-badge status-na">N/A</span>';
+      } else if (!activity.status || status === 'EMPTY') {
+        statusBadge = '<span class="status-badge status-empty">NOT STARTED</span>';
+      } else {
+        statusBadge = '<span class="status-badge status-pending">⏱ PENDING</span>';
+      }
 
-    card.innerHTML = `
-      <div class="card-header">
-        <div class="card-module">${row.Module}</div>
+      const dateTime = activity.rawTimestamp && String(activity.rawTimestamp).trim() !== ''
+        ? `<div class="card-datetime">📅 ${activity.rawTimestamp}</div>`
+        : '<div class="card-datetime card-datetime-pending">Not submitted yet</div>';
+
+      const submissionText = activity.inputText
+        ? `<div class="card-submission">${activity.inputText.substring(0, 80)}${activity.inputText.length > 80 ? '...' : ''}</div>`
+        : '<div class="card-submission" style="color: rgba(255,255,255,0.4)">No submission</div>';
+
+      // Card header
+      const header = document.createElement('div');
+      header.className = 'card-header';
+      header.innerHTML = `
+        <div class="card-module">MODULE ${module.module}</div>
         <div class="card-status">${statusBadge}</div>
-      </div>
-      <div class="card-body">
-        <div class="card-activity">${row.Activity}</div>
+      `;
+
+      // Card body
+      const body = document.createElement('div');
+      body.className = 'card-body';
+      body.innerHTML = `
+        <div class="card-activity">${activity.name}</div>
         ${submissionText}
         ${dateTime}
-      </div>
-      <div class="card-footer">
-        <button class="btn-small ${row.Status === 'Done' ? 'done' : ''}" 
-                onclick="openInputModal(${index})"
-                ${row.Status === 'Done' ? 'disabled' : ''}>
-          ${row.Status === 'Done' ? '✓ Submitted' : '📝 Submit'}
-        </button>
-      </div>
-    `;
+      `;
 
-    cardsContainer.appendChild(card);
+      // Card footer with buttons
+      const footer = document.createElement('div');
+      footer.className = 'card-footer';
+      footer.style.gap = '8px';
+
+      // Create textarea for this card (hidden, used by modal)
+      const textarea = document.createElement('textarea');
+      textarea.style.display = 'none';
+      textarea.value = activity.inputText || '';
+      textarea.maxLength = 100000;
+
+      if (isCompleted || isLocked || isNotApplicable) {
+        // Disabled state
+        const disabledBtn = document.createElement('button');
+        disabledBtn.className = 'btn-small btn-disabled';
+        disabledBtn.disabled = true;
+        if (isCompleted) disabledBtn.textContent = 'COMPLETED';
+        else if (isLocked) disabledBtn.textContent = 'LOCKED';
+        else if (isNotApplicable) disabledBtn.textContent = 'NOT APPLICABLE';
+        footer.appendChild(disabledBtn);
+      } else {
+        // Edit button
+        const editBtn = document.createElement('button');
+        editBtn.className = 'btn-small';
+        editBtn.textContent = '📝 Edit';
+        editBtn.onclick = () => {
+          openInputModal(textarea, module.module, activity.name, activityIndex, activity);
+        };
+        footer.appendChild(editBtn);
+
+        // Mark as Done button
+        const doneBtn = document.createElement('button');
+        doneBtn.className = 'btn-small btn-action';
+        doneBtn.textContent = 'MARK AS DONE';
+        doneBtn.onclick = () => {
+          markAsDone(module.module, activityIndex, activity, textarea);
+        };
+        footer.appendChild(doneBtn);
+      }
+
+      card.appendChild(header);
+      card.appendChild(body);
+      card.appendChild(textarea);
+      card.appendChild(footer);
+
+      cardsContainer.appendChild(card);
+      globalIndex++;
+    });
   });
 }
 
