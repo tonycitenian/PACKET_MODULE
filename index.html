@@ -681,28 +681,38 @@ select option {
 }
 
 .pm-badge {
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 900;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   color: white;
-  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.6);
-  animation: pmPulse 1.5s ease-in-out infinite;
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.8);
+  animation: pmFloat 2s ease-in-out infinite;
+  position: relative;
 }
 
-@keyframes pmPulse {
+/* Playful floating animation with rotation */
+@keyframes pmFloat {
   0%, 100% {
-    transform: scale(1);
-    opacity: 0.9;
+    transform: translateY(0) scale(1) rotate(0deg);
+    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.8);
+  }
+  25% {
+    transform: translateY(-10px) scale(1.05) rotate(5deg);
+    box-shadow: 0 12px 28px rgba(79, 70, 229, 0.9);
   }
   50% {
-    transform: scale(1.1);
-    opacity: 1;
+    transform: translateY(-15px) scale(1.1) rotate(0deg);
+    box-shadow: 0 16px 32px rgba(139, 92, 246, 0.9);
+  }
+  75% {
+    transform: translateY(-10px) scale(1.05) rotate(-5deg);
+    box-shadow: 0 12px 28px rgba(79, 70, 229, 0.9);
   }
 }
 
@@ -715,18 +725,66 @@ select option {
 
 /* Success Flash Animation */
 .success-flash {
-  animation: successFlash 0.6s ease-out;
+  animation: successFlash 0.8s ease-out;
+  position: relative;
 }
 
 @keyframes successFlash {
   0% {
-    background: linear-gradient(90deg, rgba(16, 185, 129, 0.3), rgba(5, 150, 105, 0.3));
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.4), rgba(5, 150, 105, 0.4));
   }
-  50% {
-    background: linear-gradient(90deg, rgba(16, 185, 129, 0.5), rgba(5, 150, 105, 0.5));
+  30% {
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.6), rgba(5, 150, 105, 0.6));
+  }
+  60% {
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.4), rgba(5, 150, 105, 0.4));
   }
   100% {
     background: transparent;
+  }
+}
+
+/* Success Checkmark Badge */
+.success-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.checkmark-circle {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: white;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.6);
+  animation: checkmarkBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes checkmarkBounce {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(10deg);
+  }
+  70% {
+    transform: scale(0.9) rotate(-5deg);
+  }
+  85% {
+    transform: scale(1.05) rotate(2deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
   }
 }
 
@@ -2575,25 +2633,55 @@ async function markAsDone(moduleNumber, activityIndex, activity, textareaEl) {
         mod.activities[activityIndex].inputText = inputText;
       }
       
-      // Show success flash on desktop row
+      // Show bouncing checkmark and success flash on desktop row
       if (targetRow) {
         targetRow.classList.remove('updating-row');
-        targetRow.classList.add('success-flash');
         if (pmBadgeDesktop) pmBadgeDesktop.remove();
-        setTimeout(() => targetRow.classList.remove('success-flash'), 600);
+        
+        // Add bouncing checkmark
+        const successBadge = document.createElement('div');
+        successBadge.className = 'success-badge';
+        successBadge.innerHTML = '<div class="checkmark-circle">✓</div>';
+        targetRow.style.position = 'relative';
+        targetRow.appendChild(successBadge);
+        
+        // Add flash animation
+        targetRow.classList.add('success-flash');
+        
+        // Remove checkmark after animation
+        setTimeout(() => {
+          targetRow.classList.remove('success-flash');
+          successBadge.remove();
+        }, 800);
       }
       
-      // Show success flash on mobile card
+      // Show bouncing checkmark and success flash on mobile card
       if (targetCard) {
         targetCard.classList.remove('card-updating');
-        targetCard.classList.add('success-flash');
         if (pmBadgeMobile) pmBadgeMobile.remove();
-        setTimeout(() => targetCard.classList.remove('success-flash'), 600);
+        
+        // Add bouncing checkmark
+        const successBadge = document.createElement('div');
+        successBadge.className = 'success-badge';
+        successBadge.innerHTML = '<div class="checkmark-circle">✓</div>';
+        targetCard.style.position = 'relative';
+        targetCard.appendChild(successBadge);
+        
+        // Add flash animation
+        targetCard.classList.add('success-flash');
+        
+        // Remove checkmark after animation
+        setTimeout(() => {
+          targetCard.classList.remove('success-flash');
+          successBadge.remove();
+        }, 800);
       }
       
-      // Re-render to update UI
-      renderProgressTable();
-      showNotice('✓ Activity marked as DONE successfully!', 'success');
+      // Re-render to update UI (slight delay to show success animation)
+      setTimeout(() => {
+        renderProgressTable();
+        showNotice('✓ Activity marked as DONE successfully!', 'success');
+      }, 400);
     } else {
       // Remove loading states on error
       if (targetRow) {
