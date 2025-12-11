@@ -694,25 +694,25 @@ select option {
   box-shadow: 0 8px 24px rgba(79, 70, 229, 0.8);
   animation: pmFloat 2s ease-in-out infinite;
   position: relative;
+  /* Performance optimizations */
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
-/* Playful floating animation with rotation */
+/* Optimized floating animation - transform only (GPU accelerated) */
 @keyframes pmFloat {
   0%, 100% {
-    transform: translateY(0) scale(1) rotate(0deg);
-    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.8);
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
   }
   25% {
-    transform: translateY(-10px) scale(1.05) rotate(5deg);
-    box-shadow: 0 12px 28px rgba(79, 70, 229, 0.9);
+    transform: translate3d(0, -10px, 0) scale(1.05) rotate(5deg);
   }
   50% {
-    transform: translateY(-15px) scale(1.1) rotate(0deg);
-    box-shadow: 0 16px 32px rgba(139, 92, 246, 0.9);
+    transform: translate3d(0, -15px, 0) scale(1.1) rotate(0deg);
   }
   75% {
-    transform: translateY(-10px) scale(1.05) rotate(-5deg);
-    box-shadow: 0 12px 28px rgba(79, 70, 229, 0.9);
+    transform: translate3d(0, -10px, 0) scale(1.05) rotate(-5deg);
   }
 }
 
@@ -723,24 +723,31 @@ select option {
   pointer-events: none;
 }
 
-/* Success Flash Animation */
+/* Success Flash Animation - Optimized with pseudo-element */
 .success-flash {
-  animation: successFlash 0.8s ease-out;
   position: relative;
 }
 
-@keyframes successFlash {
+.success-flash::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.5), rgba(5, 150, 105, 0.5));
+  border-radius: inherit;
+  animation: successFlashFade 0.6s ease-out;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+@keyframes successFlashFade {
   0% {
-    background: linear-gradient(90deg, rgba(16, 185, 129, 0.4), rgba(5, 150, 105, 0.4));
+    opacity: 0;
   }
   30% {
-    background: linear-gradient(90deg, rgba(16, 185, 129, 0.6), rgba(5, 150, 105, 0.6));
-  }
-  60% {
-    background: linear-gradient(90deg, rgba(16, 185, 129, 0.4), rgba(5, 150, 105, 0.4));
+    opacity: 1;
   }
   100% {
-    background: transparent;
+    opacity: 0;
   }
 }
 
@@ -765,25 +772,28 @@ select option {
   font-size: 2.5rem;
   color: white;
   box-shadow: 0 8px 24px rgba(16, 185, 129, 0.6);
-  animation: checkmarkBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  animation: checkmarkBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  /* Performance optimizations */
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 @keyframes checkmarkBounce {
   0% {
-    transform: scale(0) rotate(-180deg);
+    transform: translate3d(0, 0, 0) scale(0) rotate(-180deg);
     opacity: 0;
   }
   50% {
-    transform: scale(1.2) rotate(10deg);
+    transform: translate3d(0, 0, 0) scale(1.2) rotate(10deg);
   }
   70% {
-    transform: scale(0.9) rotate(-5deg);
+    transform: translate3d(0, 0, 0) scale(0.9) rotate(-5deg);
   }
   85% {
-    transform: scale(1.05) rotate(2deg);
+    transform: translate3d(0, 0, 0) scale(1.05) rotate(2deg);
   }
   100% {
-    transform: scale(1) rotate(0deg);
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
     opacity: 1;
   }
 }
@@ -2679,9 +2689,12 @@ async function markAsDone(moduleNumber, activityIndex, activity, textareaEl) {
       
       // Re-render to update UI (slight delay to show success animation)
       setTimeout(() => {
-        renderProgressTable();
+        // OPTIMIZATION: Update only the affected row instead of re-rendering entire table
+        updateSingleRow(targetRow, moduleNumber, activityIndex);
+        updateSingleCard(targetCard, moduleNumber, activityIndex);
+        updateStatistics();
         showNotice('✓ Activity marked as DONE successfully!', 'success');
-      }, 400);
+      }, 300);
     } else {
       // Remove loading states on error
       if (targetRow) {
@@ -2727,6 +2740,110 @@ async function markAsDone(moduleNumber, activityIndex, activity, textareaEl) {
     console.error(error);
     showNotice('Error updating activity: ' + (error && error.message ? error.message : String(error)), 'error');
   }
+}
+
+/**
+ * OPTIMIZATION: Update single row instead of re-rendering entire table
+ * @param {HTMLElement} row - Target row element
+ * @param {number} moduleNumber - Module number
+ * @param {number} activityIndex - Activity index
+ */
+function updateSingleRow(row, moduleNumber, activityIndex) {
+  if (!row || !currentUser) return;
+  
+  const mod = currentUser.modules.find(m => m.module === moduleNumber);
+  if (!mod || !mod.activities[activityIndex]) return;
+  
+  const activity = mod.activities[activityIndex];
+  
+  // Update status badge
+  const statusCell = row.querySelector('td:nth-child(3)');
+  if (statusCell) {
+    statusCell.innerHTML = '<span class="status-badge status-done">COMPLETED</span>';
+  }
+  
+  // Update datetime
+  const datetimeCell = row.querySelector('.datetime-cell');
+  if (datetimeCell) {
+    datetimeCell.textContent = activity.rawTimestamp;
+    datetimeCell.classList.remove('datetime-pending');
+  }
+  
+  // Update action button
+  const actionBtn = row.querySelector('.btn-action, .btn-small');
+  if (actionBtn) {
+    actionBtn.className = 'btn-small btn-disabled';
+    actionBtn.disabled = true;
+    actionBtn.textContent = 'COMPLETED';
+  }
+  
+  // Disable textarea
+  const textarea = row.querySelector('.input-textarea');
+  if (textarea) {
+    textarea.disabled = true;
+    textarea.title = 'Disabled: activity is COMPLETED';
+  }
+}
+
+/**
+ * OPTIMIZATION: Update single mobile card instead of re-rendering all cards
+ * @param {HTMLElement} card - Target card element
+ * @param {number} moduleNumber - Module number
+ * @param {number} activityIndex - Activity index
+ */
+function updateSingleCard(card, moduleNumber, activityIndex) {
+  if (!card || !currentUser) return;
+  
+  const mod = currentUser.modules.find(m => m.module === moduleNumber);
+  if (!mod || !mod.activities[activityIndex]) return;
+  
+  const activity = mod.activities[activityIndex];
+  
+  // Update status badge
+  const statusBadge = card.querySelector('.card-status');
+  if (statusBadge) {
+    statusBadge.innerHTML = '<span class="status-badge status-done">✓ COMPLETED</span>';
+  }
+  
+  // Update datetime
+  const datetime = card.querySelector('.card-datetime');
+  if (datetime) {
+    datetime.textContent = '📅 ' + activity.rawTimestamp;
+    datetime.classList.remove('card-datetime-pending');
+  }
+  
+  // Update footer buttons
+  const footer = card.querySelector('.card-footer');
+  if (footer) {
+    footer.innerHTML = '<button class="btn-small btn-disabled" disabled>COMPLETED</button>';
+  }
+}
+
+/**
+ * OPTIMIZATION: Update statistics only (no full re-render)
+ */
+function updateStatistics() {
+  if (!currentUser || !currentUser.modules) return;
+  
+  let totalCompleted = 0;
+  let totalPending = 0;
+  let totalActivities = 0;
+  
+  currentUser.modules.forEach(module => {
+    module.activities.forEach(activity => {
+      totalActivities++;
+      const status = (activity.status || '').toUpperCase();
+      if (status === 'COMPLETED') {
+        totalCompleted++;
+      } else if (status !== 'LOCKED' && status !== 'NOT APPLICABLE' && status !== 'N/A' && status !== 'NA') {
+        totalPending++;
+      }
+    });
+  });
+  
+  document.getElementById('statCompleted').textContent = totalCompleted;
+  document.getElementById('statPending').textContent = totalPending;
+  document.getElementById('statTotal').textContent = totalActivities;
 }
 
 /**
