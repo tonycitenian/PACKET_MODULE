@@ -98,6 +98,11 @@
   color: var(--text-white);
 }
 
+.status-missing {
+  background: linear-gradient(90deg, #f97316, #ea580c);
+  color: var(--text-white);
+}
+
 /* Notices */
 .notice {
   margin-top: var(--spacing-lg);

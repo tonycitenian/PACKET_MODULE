@@ -8,6 +8,7 @@
 
 let currentUser = null;
 let currentPassword = '';
+let currentUserName = ''; // Store current user's name for refresh
 let allNames = []; // Store all names for autocomplete
 let selectedName = ''; // Store selected name
 let activeIndex = -1; // Track active suggestion
@@ -253,6 +254,7 @@ function onLoginSuccess(response) {
 
   currentUser = response;
   currentPassword = document.getElementById('passwordField').value;
+  currentUserName = currentUser.name; // Store name for refresh
   
   showProgressView();
   renderProgressTable();
@@ -266,6 +268,7 @@ function showProgressView() {
   document.getElementById('loginCard').style.display = 'none';
   document.getElementById('progressCard').classList.add('active');
   document.getElementById('logoutBtn').style.display = 'inline-block';
+  document.getElementById('refreshBtn').style.display = 'inline-block';
   document.getElementById('headerStudentName').textContent = currentUser.name;
 }
 
@@ -275,9 +278,11 @@ function showProgressView() {
 function onLogout() {
   currentUser = null;
   currentPassword = '';
+  currentUserName = '';
   document.getElementById('loginCard').style.display = 'block';
   document.getElementById('progressCard').classList.remove('active');
   document.getElementById('logoutBtn').style.display = 'none';
+  document.getElementById('refreshBtn').style.display = 'none';
   document.getElementById('passwordField').value = '';
   document.getElementById('headerStudentName').textContent = '';
   document.getElementById('authNotice').innerHTML = '';
@@ -285,11 +290,21 @@ function onLogout() {
 
 /**
  * Refresh progress data from server
+ * Re-fetches current user's data from Google Sheets
  */
 async function refreshProgress() {
   if (!currentUser) return;
   
+  const refreshBtn = document.getElementById('refreshBtn');
+  const originalText = refreshBtn ? refreshBtn.textContent : '';
+  
   try {
+    // Show loading state
+    if (refreshBtn) {
+      refreshBtn.disabled = true;
+      refreshBtn.textContent = '🔄 Refreshing...';
+    }
+    
     const response = await callAPI('getUserData', {
       name: currentUser.name,
       password: currentPassword
@@ -298,9 +313,25 @@ async function refreshProgress() {
     if (response && response.success) {
       currentUser = response;
       renderProgressTable();
-      showNotice('Progress refreshed', 'success');
+      showNotice('✅ Data refreshed successfully!', 'success');
+    } else {
+      showNotice('Failed to refresh: ' + (response.message || 'Unknown error'), 'error');
     }
   } catch (error) {
-    onError(error);
+    console.error('Refresh error:', error);
+    showNotice('Error refreshing data: ' + error.message, 'error');
+  } finally {
+    // Restore button state
+    if (refreshBtn) {
+      refreshBtn.disabled = false;
+      refreshBtn.textContent = originalText;
+    }
   }
+}
+
+/**
+ * Alias for global access
+ */
+function refreshData() {
+  return refreshProgress();
 }

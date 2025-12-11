@@ -266,6 +266,11 @@ body {
   color: var(--text-white);
 }
 
+.status-missing {
+  background: linear-gradient(90deg, #f97316, #ea580c);
+  color: var(--text-white);
+}
+
 /* Notices */
 .notice {
   margin-top: var(--spacing-lg);
@@ -1269,6 +1274,7 @@ body.mobile-nav-active {
       <div class="controls">
         <div class="digital-clock" id="digitalClock">--:--:--</div>
         <div class="ver">v114</div>
+        <button class="btn ghost" id="refreshBtn" onclick="refreshData()" style="display:none" title="Refresh data from Google Sheets">🔄 Refresh</button>
         <button class="btn ghost" id="installPWABtn" onclick="installPWA()" style="display:none">📱 Install App</button>
         <button class="btn ghost" id="logoutBtn" onclick="onLogout()" style="display:none">Logout</button>
       </div>
@@ -1657,6 +1663,7 @@ function startClockLocal() {
 
 let currentUser = null;
 let currentPassword = '';
+let currentUserName = ''; // Store current user's name for refresh
 let allNames = []; // Store all names for autocomplete
 let selectedName = ''; // Store selected name
 let activeIndex = -1; // Track active suggestion
@@ -1902,6 +1909,7 @@ function onLoginSuccess(response) {
 
   currentUser = response;
   currentPassword = document.getElementById('passwordField').value;
+  currentUserName = currentUser.name; // Store name for refresh
   
   showProgressView();
   renderProgressTable();
@@ -1915,6 +1923,7 @@ function showProgressView() {
   document.getElementById('loginCard').style.display = 'none';
   document.getElementById('progressCard').classList.add('active');
   document.getElementById('logoutBtn').style.display = 'inline-block';
+  document.getElementById('refreshBtn').style.display = 'inline-block';
   document.getElementById('headerStudentName').textContent = currentUser.name;
 }
 
@@ -1924,9 +1933,11 @@ function showProgressView() {
 function onLogout() {
   currentUser = null;
   currentPassword = '';
+  currentUserName = '';
   document.getElementById('loginCard').style.display = 'block';
   document.getElementById('progressCard').classList.remove('active');
   document.getElementById('logoutBtn').style.display = 'none';
+  document.getElementById('refreshBtn').style.display = 'none';
   document.getElementById('passwordField').value = '';
   document.getElementById('headerStudentName').textContent = '';
   document.getElementById('authNotice').innerHTML = '';
@@ -1934,11 +1945,21 @@ function onLogout() {
 
 /**
  * Refresh progress data from server
+ * Re-fetches current user's data from Google Sheets
  */
 async function refreshProgress() {
   if (!currentUser) return;
   
+  const refreshBtn = document.getElementById('refreshBtn');
+  const originalText = refreshBtn ? refreshBtn.textContent : '';
+  
   try {
+    // Show loading state
+    if (refreshBtn) {
+      refreshBtn.disabled = true;
+      refreshBtn.textContent = '🔄 Refreshing...';
+    }
+    
     const response = await callAPI('getUserData', {
       name: currentUser.name,
       password: currentPassword
@@ -1947,11 +1968,27 @@ async function refreshProgress() {
     if (response && response.success) {
       currentUser = response;
       renderProgressTable();
-      showNotice('Progress refreshed', 'success');
+      showNotice('✅ Data refreshed successfully!', 'success');
+    } else {
+      showNotice('Failed to refresh: ' + (response.message || 'Unknown error'), 'error');
     }
   } catch (error) {
-    onError(error);
+    console.error('Refresh error:', error);
+    showNotice('Error refreshing data: ' + error.message, 'error');
+  } finally {
+    // Restore button state
+    if (refreshBtn) {
+      refreshBtn.disabled = false;
+      refreshBtn.textContent = originalText;
+    }
   }
+}
+
+/**
+ * Alias for global access
+ */
+function refreshData() {
+  return refreshProgress();
 }
 
 
@@ -2239,29 +2276,36 @@ function renderProgressTable() {
       let isLocked = false;
       let isCompleted = false;
       let isNotApplicable = false;
+      let isMissing = false;
       
       if (status === 'COMPLETED') {
         badge.className += ' status-done';
         badge.textContent = 'COMPLETED';
         totalCompleted++;
         isCompleted = true;
+      } else if (status === 'MISSING') {
+        badge.className += ' status-missing';
+        badge.textContent = 'MISSING';
+        totalPending++;
+        isMissing = true;
       } else if (status === 'LOCKED') {
         badge.className += ' status-locked';
         badge.textContent = 'LOCKED';
         isLocked = true;
-      } else if (status === 'NOT APPLICABLE' || status === 'N/A' || status === 'NA') {
+      } else if (status === 'NOT APPLICABLE') {
         badge.className += ' status-na';
         badge.textContent = 'NOT APPLICABLE';
         isNotApplicable = true;
-      } else if (status === 'EMPTY' || !status) {
-        badge.className += ' status-empty';
-        badge.textContent = 'NOT STARTED';
-        totalPending++;
-      } else {
+      } else if (status === 'PENDING') {
         badge.className += ' status-pending';
         badge.textContent = 'PENDING';
         totalPending++;
         isPending = true;
+      } else {
+        // Fallback for any other status
+        badge.className += ' status-empty';
+        badge.textContent = status || 'NOT STARTED';
+        totalPending++;
       }
       
       statusCell.appendChild(badge);
@@ -2297,6 +2341,7 @@ function renderProgressTable() {
         textarea.disabled = true;
         textarea.title = 'Disabled: activity is ' + badge.textContent;
       } else {
+        // Allow editing for PENDING, MISSING, and other editable statuses
         textarea.style.cursor = 'pointer';
       }
 
@@ -2329,6 +2374,7 @@ function renderProgressTable() {
         else if (isLocked) actionBtn.textContent = 'LOCKED';
         else if (isNotApplicable) actionBtn.textContent = 'NOT APPLICABLE';
       } else {
+        // Both MISSING and PENDING show "MARK AS DONE"
         actionBtn.className += ' btn-action';
         actionBtn.textContent = 'MARK AS DONE';
         actionBtn.onclick = () => markAsDone(module.module, index, activity, textarea);
@@ -2400,14 +2446,20 @@ async function markAsDone(moduleNumber, activityIndex, activity, textareaEl) {
     });
     
     if (result && result.success) {
-      const mod = currentUser.modules.find(m => m.module === moduleNumber);
-      if (mod && mod.activities[activityIndex]) {
-        mod.activities[activityIndex].rawValue = 'DONE';
-        mod.activities[activityIndex].rawTimestamp = result.timestamp || new Date().toString();
-        mod.activities[activityIndex].status = 'COMPLETED';
-        mod.activities[activityIndex].inputText = inputText;
+      // Auto-refresh to get latest data from Google Sheets
+      if (typeof refreshData === 'function') {
+        await refreshData();
+      } else {
+        // Fallback: manual update if refresh not available
+        const mod = currentUser.modules.find(m => m.module === moduleNumber);
+        if (mod && mod.activities[activityIndex]) {
+          mod.activities[activityIndex].rawValue = 'DONE';
+          mod.activities[activityIndex].rawTimestamp = result.timestamp || new Date().toString();
+          mod.activities[activityIndex].status = 'COMPLETED';
+          mod.activities[activityIndex].inputText = inputText;
+        }
+        renderProgressTable();
       }
-      renderProgressTable();
       showNotice('Activity marked as DONE successfully!', 'success');
     } else {
       if (targetRow) targetRow.classList.remove('updating-row');

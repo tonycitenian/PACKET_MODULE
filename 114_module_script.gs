@@ -292,20 +292,26 @@ function getUserData(name, password) {
         const rawTsStr = (rawTs === null || rawTs === undefined) ? '' : String(rawTs);
         const rawLockStr = (rawLock === null || rawLock === undefined) ? '' : String(rawLock);
 
-        // Determine status
+        // Determine status based on Google Sheet values
         let status = '';
         if (rawLockStr.trim() !== '') {
+          // If lock column has any value
           status = 'LOCKED';
-        } else if (rawValueStr.trim() === '') {
-          status = 'EMPTY';
         } else {
           const up = rawValueStr.trim().toUpperCase();
-          if (up === 'DONE' || up === 'COMPLETED') {
+          if (up === 'DONE') {
             status = 'COMPLETED';
-          } else if (up === 'NOT APPLICABLE' || up === 'N/A' || up === 'NA') {
+          } else if (up === '0') {
+            status = 'MISSING';
+          } else if (up === 'LOCKED') {
+            status = 'LOCKED';
+          } else if (up === 'EMPTY' || up === '') {
             status = 'NOT APPLICABLE';
+          } else if (up === 'PENDING') {
+            status = 'PENDING';
           } else {
-            status = rawValueStr.trim(); // Keep original value as status
+            // Fallback: keep original value as status
+            status = rawValueStr.trim();
           }
         }
 
@@ -500,6 +506,79 @@ function testLogin() {
   } else {
     Logger.log('❌ Login failed: ' + result.message);
   }
+}
+
+/**
+ * DEBUG: Check specific student's data (columns D-M)
+ * Run this from Apps Script Editor to see what values are being read
+ */
+function debugStudentStatus() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const progressSheet = ss.getSheetByName('MODULE_PROGRESS');
+  
+  // Find the student by name
+  const studentName = 'ITE 370 3-2 ZERESO, KURTH JAY JANCE';
+  const lastRow = progressSheet.getLastRow();
+  const nameVals = progressSheet.getRange(2, 2, lastRow - 1, 1).getValues();
+  
+  let matchedRow = -1;
+  for (let i = 0; i < nameVals.length; i++) {
+    if (String(nameVals[i][0]) === studentName) {
+      matchedRow = i + 2;
+      break;
+    }
+  }
+  
+  if (matchedRow === -1) {
+    Logger.log('❌ Student not found: ' + studentName);
+    return;
+  }
+  
+  Logger.log('✅ Found student at row: ' + matchedRow);
+  Logger.log('Student name: ' + studentName);
+  Logger.log('==========================================');
+  
+  // Read columns D-M (Module 1, activities 0-9)
+  const columnsToCheck = ['D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'];
+  const activityNames = [
+    'SOC 1', 'SOC 2', 'PRACTICE 1', 'PRACTICE 2', 'PRACTICE 3',
+    'PRACTICE 4', 'PRACTICE 5', 'REFLECTION', 'WRAP-UP', 'ASSESSMENT'
+  ];
+  
+  Logger.log('\n📊 READING FROM MODULE_PROGRESS SHEET:');
+  Logger.log('==========================================');
+  
+  for (let i = 0; i < columnsToCheck.length; i++) {
+    const col = columnsToCheck[i];
+    const colIndex = letterToColumn(col);
+    const cellValue = progressSheet.getRange(matchedRow, colIndex).getValue();
+    const cellValueStr = (cellValue === null || cellValue === undefined) ? '(EMPTY)' : String(cellValue);
+    
+    // Determine what STATUS this would produce
+    let status = '';
+    const up = cellValueStr.trim().toUpperCase();
+    if (up === 'DONE') {
+      status = 'COMPLETED';
+    } else if (up === '0') {
+      status = 'MISSING';
+    } else if (up === 'LOCKED') {
+      status = 'LOCKED';
+    } else if (up === 'EMPTY' || up === '' || up === '(EMPTY)') {
+      status = 'NOT APPLICABLE';
+    } else if (up === 'PENDING') {
+      status = 'PENDING';
+    } else {
+      status = cellValueStr.trim();
+    }
+    
+    Logger.log('Column ' + col + ' (' + activityNames[i] + '):');
+    Logger.log('  Raw Value: "' + cellValueStr + '"');
+    Logger.log('  Mapped Status: ' + status);
+    Logger.log('  ---');
+  }
+  
+  Logger.log('\n==========================================');
+  Logger.log('✅ Debug complete! Check the values above.');
 }
 
 /**

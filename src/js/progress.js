@@ -54,29 +54,36 @@ function renderProgressTable() {
       let isLocked = false;
       let isCompleted = false;
       let isNotApplicable = false;
+      let isMissing = false;
       
       if (status === 'COMPLETED') {
         badge.className += ' status-done';
         badge.textContent = 'COMPLETED';
         totalCompleted++;
         isCompleted = true;
+      } else if (status === 'MISSING') {
+        badge.className += ' status-missing';
+        badge.textContent = 'MISSING';
+        totalPending++;
+        isMissing = true;
       } else if (status === 'LOCKED') {
         badge.className += ' status-locked';
         badge.textContent = 'LOCKED';
         isLocked = true;
-      } else if (status === 'NOT APPLICABLE' || status === 'N/A' || status === 'NA') {
+      } else if (status === 'NOT APPLICABLE') {
         badge.className += ' status-na';
         badge.textContent = 'NOT APPLICABLE';
         isNotApplicable = true;
-      } else if (status === 'EMPTY' || !status) {
-        badge.className += ' status-empty';
-        badge.textContent = 'NOT STARTED';
-        totalPending++;
-      } else {
+      } else if (status === 'PENDING') {
         badge.className += ' status-pending';
         badge.textContent = 'PENDING';
         totalPending++;
         isPending = true;
+      } else {
+        // Fallback for any other status
+        badge.className += ' status-empty';
+        badge.textContent = status || 'NOT STARTED';
+        totalPending++;
       }
       
       statusCell.appendChild(badge);
@@ -112,6 +119,7 @@ function renderProgressTable() {
         textarea.disabled = true;
         textarea.title = 'Disabled: activity is ' + badge.textContent;
       } else {
+        // Allow editing for PENDING, MISSING, and other editable statuses
         textarea.style.cursor = 'pointer';
       }
 
@@ -144,6 +152,7 @@ function renderProgressTable() {
         else if (isLocked) actionBtn.textContent = 'LOCKED';
         else if (isNotApplicable) actionBtn.textContent = 'NOT APPLICABLE';
       } else {
+        // Both MISSING and PENDING show "MARK AS DONE"
         actionBtn.className += ' btn-action';
         actionBtn.textContent = 'MARK AS DONE';
         actionBtn.onclick = () => markAsDone(module.module, index, activity, textarea);
@@ -215,14 +224,20 @@ async function markAsDone(moduleNumber, activityIndex, activity, textareaEl) {
     });
     
     if (result && result.success) {
-      const mod = currentUser.modules.find(m => m.module === moduleNumber);
-      if (mod && mod.activities[activityIndex]) {
-        mod.activities[activityIndex].rawValue = 'DONE';
-        mod.activities[activityIndex].rawTimestamp = result.timestamp || new Date().toString();
-        mod.activities[activityIndex].status = 'COMPLETED';
-        mod.activities[activityIndex].inputText = inputText;
+      // Auto-refresh to get latest data from Google Sheets
+      if (typeof refreshData === 'function') {
+        await refreshData();
+      } else {
+        // Fallback: manual update if refresh not available
+        const mod = currentUser.modules.find(m => m.module === moduleNumber);
+        if (mod && mod.activities[activityIndex]) {
+          mod.activities[activityIndex].rawValue = 'DONE';
+          mod.activities[activityIndex].rawTimestamp = result.timestamp || new Date().toString();
+          mod.activities[activityIndex].status = 'COMPLETED';
+          mod.activities[activityIndex].inputText = inputText;
+        }
+        renderProgressTable();
       }
-      renderProgressTable();
       showNotice('Activity marked as DONE successfully!', 'success');
     } else {
       if (targetRow) targetRow.classList.remove('updating-row');
