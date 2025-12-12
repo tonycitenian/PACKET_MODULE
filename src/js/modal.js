@@ -67,6 +67,9 @@ function createModal() {
   btns.style.display = 'flex';
   btns.style.gap = '8px';
 
+  // Check if mobile view (768px or less)
+  const isMobile = window.innerWidth <= 768;
+
   const saveBtn = document.createElement('button');
   saveBtn.className = 'modal-save';
   saveBtn.textContent = 'Save';
@@ -80,7 +83,11 @@ function createModal() {
   doneBtn.textContent = 'MARK AS DONE';
   doneBtn.title = 'Save and mark activity as completed';
 
-  btns.appendChild(saveBtn);
+  // Mobile: Only Cancel + Mark as Done (no Save)
+  // Desktop: All 3 buttons (Save + Cancel + Mark as Done)
+  if (!isMobile) {
+    btns.appendChild(saveBtn);
+  }
   btns.appendChild(cancelBtn);
   btns.appendChild(doneBtn);
 
@@ -203,9 +210,12 @@ function openInputModal(smallTextarea, moduleNumber, activityName, activityIndex
     } catch (e) {}
   }
 
-  modalParts.saveBtn.addEventListener('click', () => {
-    closeModal(true);
-  });
+  // Only add Save button handler if Save button exists (desktop only)
+  if (modalParts.saveBtn) {
+    modalParts.saveBtn.addEventListener('click', () => {
+      closeModal(true);
+    });
+  }
 
   modalParts.cancelBtn.addEventListener('click', () => {
     closeModal(false);
