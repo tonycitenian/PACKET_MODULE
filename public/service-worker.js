@@ -6,7 +6,7 @@
  * - Static assets: Network-first with cache fallback
  */
 
-const CACHE_NAME = 'packet-module-v115';
+const CACHE_NAME = 'packet-module-v116';
 const urlsToCache = [
   '/PACKET_MODULE/',
   '/PACKET_MODULE/index.html'
