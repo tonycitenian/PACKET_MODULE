@@ -27,6 +27,9 @@ function renderProgressCards(data) {
       ? `<div class="card-submission">${row.Submission.substring(0, 80)}${row.Submission.length > 80 ? '...' : ''}</div>`
       : '<div class="card-submission" style="color: rgba(255,255,255,0.4)">No submission</div>';
 
+    const isDisabled = row.Status === 'Done';
+    const buttonText = isDisabled ? '✓ Submitted' : '📝 Submit';
+
     card.innerHTML = `
       <div class="card-header">
         <div class="card-module">${row.Module}</div>
@@ -38,13 +41,31 @@ function renderProgressCards(data) {
         ${dateTime}
       </div>
       <div class="card-footer">
-        <button class="btn-small ${row.Status === 'Done' ? 'done' : ''}" 
-                onclick="openInputModal(${index})"
-                ${row.Status === 'Done' ? 'disabled' : ''}>
-          ${row.Status === 'Done' ? '✓ Submitted' : '📝 Submit'}
+        <button class="btn-small ${isDisabled ? 'done' : ''}" 
+                data-card-index="${index}"
+                ${isDisabled ? 'disabled' : ''}>
+          ${buttonText}
         </button>
       </div>
     `;
+
+    // Create hidden textarea for this card (needed by openInputModal)
+    const textarea = document.createElement('textarea');
+    textarea.style.display = 'none';
+    textarea.value = row.Submission || '';
+    textarea.className = 'mobile-card-textarea';
+    textarea.dataset.cardIndex = index;
+    card.appendChild(textarea);
+
+    // Add click handler to button
+    const button = card.querySelector('button');
+    if (button && !isDisabled) {
+      button.addEventListener('click', () => {
+        if (row.moduleNumber && row.activityObj) {
+          openInputModal(textarea, row.moduleNumber, row.Activity, row.activityIndex, row.activityObj);
+        }
+      });
+    }
 
     cardsContainer.appendChild(card);
   });

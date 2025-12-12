@@ -263,13 +263,17 @@ function buildCardData() {
   
   const data = [];
   currentUser.modules.forEach(module => {
-    module.activities.forEach(activity => {
+    module.activities.forEach((activity, index) => {
       data.push({
         Module: 'MODULE ' + module.module,
         Activity: activity.name,
         Status: activity.status === 'COMPLETED' ? 'Done' : 'Pending',
         Submission: activity.inputText || '',
-        Date: activity.rawTimestamp || ''
+        Date: activity.rawTimestamp || '',
+        // Keep metadata for Option 2
+        moduleNumber: module.module,
+        activityIndex: index,
+        activityObj: activity
       });
     });
   });

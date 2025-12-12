@@ -75,8 +75,14 @@ function createModal() {
   cancelBtn.className = 'modal-cancel';
   cancelBtn.textContent = 'Cancel';
 
+  const doneBtn = document.createElement('button');
+  doneBtn.className = 'modal-done';
+  doneBtn.textContent = 'MARK AS DONE';
+  doneBtn.title = 'Save and mark activity as completed';
+
   btns.appendChild(saveBtn);
   btns.appendChild(cancelBtn);
+  btns.appendChild(doneBtn);
 
   controls.appendChild(fontControl);
   controls.appendChild(btns); // Add buttons to header controls
@@ -143,7 +149,8 @@ function createModal() {
     textarea,
     wc,
     saveBtn,
-    cancelBtn
+    cancelBtn,
+    doneBtn
   };
 }
 
@@ -202,6 +209,43 @@ function openInputModal(smallTextarea, moduleNumber, activityName, activityIndex
 
   modalParts.cancelBtn.addEventListener('click', () => {
     closeModal(false);
+  });
+
+  // Mark as Done button
+  modalParts.doneBtn.addEventListener('click', async () => {
+    // Check if activity is already completed/locked
+    if (activityObj && (activityObj.status === 'COMPLETED' || activityObj.status === 'LOCKED' || activityObj.status === 'NOT APPLICABLE')) {
+      showNotice('Activity is already ' + activityObj.status, 'error');
+      return;
+    }
+
+    const confirmed = confirm(
+      'Mark this activity as DONE?\n\n' +
+      'This will save your text and mark the activity as COMPLETED.\n' +
+      'Further editing will be disabled.'
+    );
+    
+    if (!confirmed) return;
+
+    // Save the text first
+    const newVal = modalParts.textarea.value;
+    origin.value = newVal;
+    const wcEl = origin.nextElementSibling;
+    if (wcEl && wcEl.classList && wcEl.classList.contains('word-count')) {
+      wcEl.textContent = countWords(newVal) + ' / ' + MAX_WORDS + ' words';
+    }
+
+    // Close modal
+    if (modalParts.overlay && modalParts.overlay.parentNode) {
+      modalParts.overlay.parentNode.removeChild(modalParts.overlay);
+    }
+
+    // Call markAsDone function
+    if (typeof markAsDone === 'function' && activityObj) {
+      await markAsDone(moduleNumber, activityIndex, activityObj, origin);
+    } else {
+      showNotice('Cannot mark as done: missing data', 'error');
+    }
   });
 
   modalParts.overlay.addEventListener('click', (ev) => {
