@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Student activity tracking and submission system">
+  <meta name="theme-color" content="#4f46e5">
+  <title>Packet Module — v115 (GitHub Edition)</title>
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- iOS PWA Support -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Packet Module">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  
+  <!-- CSS will be injected here by build script -->
+</head>
+<body>
+  <div class="wrap">
+    <!-- Header -->
+    <div class="header">
+      <div>
+        <div class="title">📚 Packet Module</div>
+        <div class="student-name" id="headerStudentName"></div>
+      </div>
+      <div class="controls">
+        <div class="digital-clock" id="digitalClock">--:--:--</div>
+        <div class="ver">v115</div>
+        <button class="btn ghost" id="refreshBtn" onclick="refreshData()" style="display:none" title="Refresh data from Google Sheets">🔄 Refresh</button>
+        <button class="btn ghost" id="installPWABtn" onclick="installPWA()" style="display:none">📱 Install App</button>
+        <button class="btn ghost" id="logoutBtn" onclick="onLogout()" style="display:none">Logout</button>
+      </div>
+    </div>
+
+    <!-- Login Card -->
+    <div class="login-card" id="loginCard">
+      <div class="login-logo">
+        <img src="icons/icon-192.png" alt="Packet Module Logo" class="logo-image">
+      </div>
+      <h2 class="login-title">Student Login</h2>
+      <div class="login-table">
+        <div class="form-group">
+          <label for="nameInput">Search Your Name</label>
+          <div class="autocomplete-wrapper">
+            <input id="nameInput" type="text" placeholder="Type your name..." autocomplete="off">
+            <div class="autocomplete-dropdown" id="nameDropdown"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="passwordField">Password</label>
+          <input id="passwordField" type="password" placeholder="Enter your password">
+        </div>
+        <button class="btn" id="loginBtn" onclick="onLogin()">Login</button>
+      </div>
+      <div id="authNotice"></div>
+    </div>
+
+    <!-- Progress Table -->
+    <div class="progress-card" id="progressCard">
+      <div class="progress-header">
+        <div>
+          <h2 class="progress-info">Your Progress</h2>
+          <p class="progress-subtitle">MODULE | ACTIVITY | STATUS | SUBMISSION | DATE UPDATED | ACTION</p>
+        </div>
+        <div class="progress-stats">
+          <div class="stat-item">
+            <span class="stat-label">COMPLETED</span>
+            <span class="stat-value" id="statCompleted">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">PENDING</span>
+            <span class="stat-value" id="statPending">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">TOTAL</span>
+            <span class="stat-value" id="statTotal">140</span>
+          </div>
+        </div>
+        <button class="btn ghost" onclick="refreshProgress()">Refresh</button>
+      </div>
+
+      <!-- Desktop Table View -->
+      <div class="table-container">
+        <table class="progress-table">
+          <thead>
+            <tr>
+              <th>MODULE</th>
+              <th>ACTIVITY</th>
+              <th>STATUS</th>
+              <th>SUBMISSION</th>
+              <th>DATE AND TIME</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody id="progressTableBody">
+            <!-- Rows will be populated here -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Cards View -->
+      <div class="progress-cards" id="progressCardsContainer">
+        <!-- Cards will be populated here on mobile -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="mobile-bottom-nav">
+    <div class="bottom-nav-container">
+      <div class="bottom-nav-item active" data-action="home">
+        <div class="bottom-nav-icon">🏠</div>
+        <div class="bottom-nav-label">Home</div>
+      </div>
+      <div class="bottom-nav-item" data-action="progress">
+        <div class="bottom-nav-icon">📊</div>
+        <div class="bottom-nav-label">Progress</div>
+      </div>
+      <div class="bottom-nav-item" data-action="stats">
+        <div class="bottom-nav-icon">📈</div>
+        <div class="bottom-nav-label">Stats</div>
+      </div>
+      <div class="bottom-nav-item" data-action="profile">
+        <div class="bottom-nav-icon">👤</div>
+        <div class="bottom-nav-label">Profile</div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Scroll to Top Button -->
+  <button class="scroll-top-btn" aria-label="Scroll to top">
+    ↑
+  </button>
+
+  <!-- JavaScript will be injected here by build script -->
+</body>
+</html>

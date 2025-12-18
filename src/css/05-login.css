@@ -1,0 +1,153 @@
+/* ============================================
+   Login Card & Form Styles
+   ============================================ */
+
+.login-card {
+  background: var(--bg-overlay);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-3xl);
+  box-shadow: var(--shadow-lg);
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Login Logo */
+.login-logo {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.logo-image {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-title {
+  font-size: 40px;
+  font-weight: 900;
+  margin-bottom: var(--spacing-xl);
+  color: var(--text-white);
+  text-align: center;
+}
+
+.login-table {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-xl);
+}
+
+.form-group {
+  margin: 0;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.8rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 100%;
+}
+
+select,
+input[type="password"],
+input[type="text"] {
+  width: 100%;
+  font-size: 100%;
+  padding: 0.6rem 1.0rem;
+  min-height: 40px;
+  height: auto;
+  border-radius: var(--radius-md);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-overlay-hover);
+  color: var(--text-white);
+  font-family: inherit;
+  box-sizing: border-box;
+  appearance: none;
+}
+
+select option {
+  background: #0b1220;
+  color: var(--text-white);
+  font-size: 100%;
+}
+
+/* Autocomplete Styles */
+.autocomplete-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, #0b1220, #081428);
+  border: 2px solid rgba(79, 70, 229, 0.3);
+  border-top: none;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.autocomplete-dropdown.show {
+  display: block;
+}
+
+.autocomplete-item {
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  color: var(--text-white);
+  transition: all var(--transition-fast);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.autocomplete-item:last-child {
+  border-bottom: none;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.active {
+  background: linear-gradient(90deg, rgba(79, 70, 229, 0.2), rgba(139, 92, 246, 0.1));
+  color: var(--primary-color);
+  padding-left: 1.2rem;
+}
+
+.autocomplete-item.active {
+  background: linear-gradient(90deg, rgba(79, 70, 229, 0.3), rgba(139, 92, 246, 0.15));
+}
+
+.autocomplete-no-results {
+  padding: 1rem;
+  color: var(--text-muted);
+  text-align: center;
+  font-style: italic;
+}
+
+.autocomplete-highlight {
+  color: var(--primary-color);
+  font-weight: 700;
+}
+

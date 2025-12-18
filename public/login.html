@@ -1,0 +1,3145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Student activity tracking and submission system">
+  <meta name="theme-color" content="#4f46e5">
+  <title>Packet Module 2.1</title>
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- iOS PWA Support -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Packet Module">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  
+  <style>
+/* 01-variables.css */
+/* ============================================
+   CSS Variables & Theme Configuration
+   ============================================ */
+
+:root {
+  /* Color Palette */
+  --primary-color: #4f46e5;
+  --secondary-color: #8b5cf6;
+  --success-color: #10b981;
+  --success-dark: #059669;
+  --error-color: #ef4444;
+  --error-dark: #dc2626;
+  --warning-light: #fef3c7;
+  --warning-dark: #fde68a;
+  
+  /* Backgrounds */
+  --bg-dark-1: #071428;
+  --bg-dark-2: #081428;
+  --bg-overlay: rgba(255, 255, 255, 0.02);
+  --bg-overlay-hover: rgba(255, 255, 255, 0.05);
+  
+  /* Text Colors */
+  --text-primary: #e6eef8;
+  --text-secondary: #a5b4fc;
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --text-ultra-muted: rgba(255, 255, 255, 0.4);
+  --text-white: #fff;
+  
+  /* Clock */
+  --clock-color: #ef4444;
+  
+  /* Typography */
+  --font-base-size: 25px;
+  --font-family: Inter, system-ui, "Segoe UI", Roboto, Helvetica, Arial;
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 2.5rem;
+  --spacing-3xl: 3rem;
+  
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-full: 999px;
+  
+  /* Shadows */
+  --shadow-sm: 0 4px 12px rgba(16, 185, 129, 0.4);
+  --shadow-md: 0 20px 40px rgba(2, 6, 23, 0.4);
+  --shadow-lg: 0 30px 80px rgba(2, 6, 23, 0.6);
+  
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  
+  /* Z-index */
+  --z-modal: 9999;
+}
+
+
+/* 02-base.css */
+/* ============================================
+   Base Styles & Typography
+   ============================================ */
+
+html {
+  font-size: var(--font-base-size);
+}
+
+body {
+  margin: 0;
+  padding: 40px;
+  font-family: var(--font-family);
+  background: linear-gradient(180deg, var(--bg-dark-1), var(--bg-dark-2));
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+.wrap {
+  max-width: 1800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+
+/* 03-layout.css */
+/* ============================================
+   Layout Components
+   ============================================ */
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg);
+  background: var(--bg-overlay);
+  border-radius: var(--radius-md);
+}
+
+.title {
+  font-weight: 900;
+  font-size: 1.8rem;
+  color: var(--text-white);
+}
+
+.student-name {
+  font-weight: 800;
+  margin-top: var(--spacing-sm);
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.ver {
+  font-weight: 800;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.8rem;
+}
+
+.controls {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+/* Clock */
+.digital-clock {
+  font-weight: 800;
+  font-size: 28px;
+  color: var(--clock-color);
+  height: 70px;
+  line-height: 70px;
+  padding: 0 12px;
+  background: var(--bg-overlay);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  min-width: 260px;
+}
+
+
+/* 04-components.css */
+/* ============================================
+   Reusable Components (Buttons, Badges, Notices)
+   ============================================ */
+
+/* Buttons */
+.btn {
+  font-weight: 800;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  color: var(--text-white);
+  border: none;
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 25px;
+  width: 100%;
+  margin-top: var(--spacing-lg);
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.btn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Loading state */
+.btn.loading,
+.btn-small.loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.btn.loading::after,
+.btn-small.loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  right: 12px;
+  margin-top: -8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spinner 0.6s linear infinite;
+}
+
+@keyframes spinner {
+  to { transform: rotate(360deg); }
+}
+
+.btn.ghost {
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  padding: 0.6rem 1.2rem;
+  width: auto;
+  font-size: 0.8rem;
+}
+
+.btn-small {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 0.7rem;
+  font-weight: 800;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-action {
+  background: linear-gradient(90deg, var(--success-color), var(--success-dark));
+  color: var(--text-white);
+}
+
+.btn-action:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-disabled {
+  background: #374151;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-full);
+  font-weight: 800;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-done {
+  background: linear-gradient(90deg, var(--success-color), var(--success-dark));
+  color: var(--text-white);
+}
+
+.status-pending {
+  background: linear-gradient(90deg, var(--warning-light), var(--warning-dark));
+  color: #92400e;
+}
+
+.status-locked {
+  background: linear-gradient(90deg, var(--error-color), var(--error-dark));
+  color: var(--text-white);
+}
+
+.status-empty {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+}
+
+.status-na {
+  background: linear-gradient(90deg, #6b7280, #4b5563);
+  color: var(--text-white);
+}
+
+.status-missing {
+  background: linear-gradient(90deg, #f97316, #ea580c);
+  color: var(--text-white);
+}
+
+/* Notices */
+.notice {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: 25px;
+  text-align: center;
+}
+
+.notice.error {
+  background: rgba(239, 68, 68, 0.1);
+  color: #fca5a5;
+  border: 2px solid rgba(239, 68, 68, 0.3);
+}
+
+.notice.success {
+  background: rgba(16, 185, 129, 0.1);
+  color: #6ee7b7;
+  border: 2px solid rgba(16, 185, 129, 0.3);
+}
+/* Success Animations */
+.success-flash {
+  animation: successFlash 0.6s ease-out;
+  position: relative;
+}
+
+@keyframes successFlash {
+  0% {
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.4), rgba(5, 150, 105, 0.4));
+  }
+  30% {
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.6), rgba(5, 150, 105, 0.6));
+  }
+  60% {
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.4), rgba(5, 150, 105, 0.4));
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+/* Success Checkmark Badge */
+.success-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.checkmark-circle {
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  color: white;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.6);
+  animation: checkmarkBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes checkmarkBounce {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(10deg);
+  }
+  70% {
+    transform: scale(0.9) rotate(-5deg);
+  }
+  85% {
+    transform: scale(1.05) rotate(2deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Responsive checkmark size */
+@media (max-width: 768px) {
+  .checkmark-circle {
+    width: 60px;
+    height: 60px;
+    font-size: 1.8rem;
+  }
+}
+
+/* 05-login.css */
+/* ============================================
+   Login Card & Form Styles
+   ============================================ */
+
+.login-card {
+  background: var(--bg-overlay);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-3xl);
+  box-shadow: var(--shadow-lg);
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Login Logo */
+.login-logo {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.logo-image {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-title {
+  font-size: 40px;
+  font-weight: 900;
+  margin-bottom: var(--spacing-xl);
+  color: var(--text-white);
+  text-align: center;
+}
+
+.login-table {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-xl);
+}
+
+.form-group {
+  margin: 0;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.8rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 100%;
+}
+
+select,
+input[type="password"],
+input[type="text"] {
+  width: 100%;
+  font-size: 100%;
+  padding: 0.6rem 1.0rem;
+  min-height: 40px;
+  height: auto;
+  border-radius: var(--radius-md);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-overlay-hover);
+  color: var(--text-white);
+  font-family: inherit;
+  box-sizing: border-box;
+  appearance: none;
+}
+
+select option {
+  background: #0b1220;
+  color: var(--text-white);
+  font-size: 100%;
+}
+
+/* Autocomplete Styles */
+.autocomplete-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, #0b1220, #081428);
+  border: 2px solid rgba(79, 70, 229, 0.3);
+  border-top: none;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.autocomplete-dropdown.show {
+  display: block;
+}
+
+.autocomplete-item {
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  color: var(--text-white);
+  transition: all var(--transition-fast);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.autocomplete-item:last-child {
+  border-bottom: none;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.active {
+  background: linear-gradient(90deg, rgba(79, 70, 229, 0.2), rgba(139, 92, 246, 0.1));
+  color: var(--primary-color);
+  padding-left: 1.2rem;
+}
+
+.autocomplete-item.active {
+  background: linear-gradient(90deg, rgba(79, 70, 229, 0.3), rgba(139, 92, 246, 0.15));
+}
+
+.autocomplete-no-results {
+  padding: 1rem;
+  color: var(--text-muted);
+  text-align: center;
+  font-style: italic;
+}
+
+.autocomplete-highlight {
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+
+
+/* 06-progress.css */
+/* ============================================
+   Progress Card & Table Styles
+   ============================================ */
+
+.progress-card {
+  background: var(--bg-overlay);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-2xl);
+  box-shadow: var(--shadow-lg);
+  display: none;
+}
+
+.progress-card.active {
+  display: block;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-2xl);
+  flex-wrap: wrap;
+  gap: var(--spacing-lg);
+}
+
+.progress-stats {
+  display: flex;
+  gap: var(--spacing-2xl);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  margin-bottom: 0.3rem;
+  font-weight: 700;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--text-white);
+}
+
+.progress-info {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--text-white);
+  font-weight: 900;
+}
+
+.progress-subtitle {
+  margin-top: 0.3rem;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.table-container {
+  overflow-x: auto;
+  margin-top: var(--spacing-lg);
+}
+
+.progress-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 var(--spacing-sm);
+}
+
+.progress-table thead th {
+  text-align: left;
+  padding: var(--spacing-md);
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.progress-table tbody tr {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+  transition: all var(--transition-fast);
+}
+
+.progress-table tbody tr:hover {
+  background: linear-gradient(90deg, rgba(79, 70, 229, 0.15), rgba(139, 92, 246, 0.08));
+  transform: translateX(4px);
+}
+
+.progress-table tbody td {
+  padding: var(--spacing-md);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.8rem;
+  vertical-align: top;
+}
+
+.progress-table tbody td:first-child {
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  border-top-left-radius: var(--radius-md);
+  border-bottom-left-radius: var(--radius-md);
+}
+
+.progress-table tbody td:last-child {
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-top-right-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+  text-align: center;
+}
+
+.module-cell {
+  font-weight: 900;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.activity-cell {
+  font-weight: 700;
+  color: var(--text-white);
+  font-size: 0.8rem;
+}
+
+.datetime-cell {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.datetime-pending {
+  color: var(--text-ultra-muted);
+  font-style: italic;
+}
+
+.updating-row {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.input-textarea {
+  width: 100%;
+  min-height: 84px;
+  max-height: 200px;
+  padding: 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-overlay);
+  color: var(--text-white);
+  resize: vertical;
+  box-sizing: border-box;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.word-count {
+  margin-top: 0.25rem;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-align: right;
+}
+
+/* ============================================
+   Mobile Card Layout (hidden by default)
+   ============================================ */
+
+.progress-cards {
+  display: none; /* Hidden on desktop, shown on mobile */
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.progress-card-item {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  transition: all var(--transition-fast);
+}
+
+.progress-card-item:active {
+  transform: scale(0.98);
+  background: linear-gradient(180deg, rgba(79, 70, 229, 0.15), rgba(139, 92, 246, 0.08));
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-module {
+  font-weight: 900;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.card-status {
+  display: inline-block;
+}
+
+.card-body {
+  margin-bottom: var(--spacing-sm);
+}
+
+.card-activity {
+  font-weight: 700;
+  color: var(--text-white);
+  font-size: 0.95rem;
+  margin-bottom: var(--spacing-xs);
+  line-height: 1.4;
+}
+
+.card-submission {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin-bottom: var(--spacing-xs);
+}
+
+.card-datetime {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.card-datetime-pending {
+  color: var(--text-ultra-muted);
+  font-style: italic;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.card-updating {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Collapsible Section */
+.collapsible-section {
+  margin-bottom: var(--spacing-md);
+}
+
+.collapsible-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--transition-fast);
+}
+
+.collapsible-header:active {
+  background: rgba(79, 70, 229, 0.1);
+  transform: scale(0.98);
+}
+
+.collapsible-title {
+  font-weight: 800;
+  color: var(--text-white);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.collapsible-icon {
+  font-size: 1.2rem;
+  transition: transform var(--transition-fast);
+  color: var(--text-secondary);
+}
+
+.collapsible-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.collapsible-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.collapsible-content.expanded {
+  max-height: 5000px;
+  transition: max-height 0.5s ease-in;
+}
+
+.collapsible-inner {
+  padding-top: var(--spacing-md);
+}
+
+
+
+/* 07-modal.css */
+/* ============================================
+   Modal Editor Styles (Fullscreen)
+   ============================================ */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.75);
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  z-index: var(--z-modal);
+  padding: 0;
+  backdrop-filter: blur(6px);
+}
+
+.modal {
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+  border-radius: 0;
+  padding: 20px;
+  box-shadow: none;
+  color: var(--text-white);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: 8px 4px;
+}
+
+.modal-title {
+  font-weight: 900;
+  font-size: 1.1rem;
+  color: var(--text-white);
+}
+
+.modal-controls {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+/* Font Control UI */
+.font-control {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+  color: #cbd5e1;
+  font-weight: 700;
+  background: var(--bg-overlay);
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.font-control button {
+  background: transparent;
+  color: var(--text-white);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.font-control input[type="range"] {
+  width: 160px;
+  accent-color: #7c3aed;
+}
+
+.font-size-label {
+  min-width: 44px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.modal-textarea {
+  width: 100%;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text-white);
+  font-size: 18px;
+  resize: none;
+  box-sizing: border-box;
+  font-family: inherit;
+  flex: 1 1 auto;
+  overflow: auto;
+  line-height: 1.4;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0;
+  gap: 12px;
+  padding: 8px 4px;
+  flex-wrap: wrap;
+}
+
+.modal-save {
+  background: linear-gradient(90deg, var(--success-color), var(--success-dark));
+  color: var(--text-white);
+  padding: 1.6rem 2.4rem;
+  border-radius: var(--radius-sm);
+  font-weight: 800;
+  font-size: 1.1rem;
+  border: none;
+  cursor: pointer;
+}
+
+.modal-cancel {
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  padding: 1.2rem 2rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-white);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.modal-done {
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  color: var(--text-white);
+  padding: 1.6rem 2.4rem;
+  border-radius: var(--radius-sm);
+  font-weight: 800;
+  font-size: 1.1rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+  transition: all var(--transition-fast);
+}
+
+.modal-done:hover {
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.5);
+  transform: translateY(-1px);
+}
+
+.modal-done:active {
+  transform: scale(0.98);
+}
+
+
+/* 08-responsive.css */
+/* ============================================
+   Responsive Media Queries
+   ============================================ */
+
+/* Tablet (1024px and below) */
+@media (max-width: 1024px) {
+  html {
+    font-size: 20px;
+  }
+
+  body {
+    padding: 20px;
+  }
+
+  .login-card {
+    padding: var(--spacing-xl);
+  }
+
+  .login-title {
+    font-size: 32px;
+  }
+
+  .digital-clock {
+    min-width: 200px;
+    height: 56px;
+    line-height: 56px;
+    font-size: 22px;
+  }
+}
+
+/* Mobile (768px and below) */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px; /* Reduced from 16px */
+  }
+
+  body {
+    padding: 10px; /* Reduced from 15px */
+  }
+
+  /* Header Layout */
+  .header {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+  }
+
+  .title {
+    font-size: 1.4rem; /* Smaller title */
+  }
+
+  .student-name {
+    font-size: 0.9rem;
+  }
+
+  /* Controls - Stack vertically */
+  .controls {
+    width: 100%;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .digital-clock {
+    width: 100%;
+    min-width: auto;
+    height: 48px;
+    line-height: 48px;
+    font-size: 1.4rem;
+  }
+
+  .ver {
+    font-size: 0.7rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  /* Buttons - Full width on mobile */
+  .controls .btn {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.9rem;
+  }
+
+  /* Login Card */
+  .login-card {
+    padding: var(--spacing-lg);
+  }
+
+  .login-title {
+    font-size: 1.6rem; /* Reduced from 28px */
+  }
+
+  .form-group {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .form-group label {
+    font-size: 0.9rem;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  select,
+  input[type="password"] {
+    font-size: 1rem;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .btn {
+    font-size: 1rem;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  /* Progress Section */
+  .progress-card {
+    padding: var(--spacing-md);
+  }
+
+  .progress-header {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .progress-info {
+    font-size: 1.3rem;
+  }
+
+  .progress-subtitle {
+    font-size: 0.75rem;
+  }
+
+  .progress-stats {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    width: 100%;
+  }
+
+  .stat-badge {
+    font-size: 0.85rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  /* Mobile: Hide table, show cards */
+  .table-container {
+    display: none; /* Hide table on mobile */
+  }
+
+  .progress-cards {
+    display: flex; /* Show cards on mobile */
+  }
+
+  /* Mobile Bottom Navigation */
+  .mobile-bottom-nav {
+    display: block;
+  }
+
+  .fab-container,
+  .scroll-top-btn {
+    display: flex;
+  }
+
+  /* Add bottom padding for fixed nav */
+  body {
+    padding-bottom: 70px;
+  }
+
+  .wrap {
+    padding-bottom: var(--spacing-lg);
+  }
+
+  /* Touch-optimized buttons */
+  .btn-small {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+    min-height: 44px; /* iOS recommended touch target */
+  }
+
+  /* Modal Editor */
+  .modal-header h3 {
+    font-size: 1.2rem;
+  }
+
+  .font-controls {
+    gap: var(--spacing-sm);
+  }
+
+  .font-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .modal-content textarea {
+    font-size: 1rem;
+    padding: var(--spacing-md);
+  }
+
+  .modal-footer .btn {
+    font-size: 0.9rem;
+    padding: var(--spacing-sm) var(--spacing-lg);
+  }
+
+  /* Notice messages */
+  .notice {
+    font-size: 0.9rem;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+}
+
+/* Small Mobile (480px and below) */
+@media (max-width: 480px) {
+  html {
+    font-size: 13px; /* Even smaller for tiny screens */
+  }
+
+  body {
+    padding: 8px;
+  }
+
+  .header {
+    padding: var(--spacing-sm);
+  }
+
+  .title {
+    font-size: 1.2rem;
+  }
+
+  .controls {
+    gap: 6px;
+  }
+
+  .digital-clock {
+    height: 42px;
+    line-height: 42px;
+    font-size: 1.2rem;
+  }
+
+  .login-card,
+  .progress-card {
+    padding: var(--spacing-md);
+  }
+
+  .login-title {
+    font-size: 1.4rem;
+  }
+
+  .progress-info {
+    font-size: 1.1rem;
+  }
+
+  .progress-subtitle {
+    font-size: 0.7rem;
+  }
+
+  .btn {
+    padding: 0.4rem 0.8rem;
+  }
+
+  .modal-header h3 {
+    font-size: 1rem;
+  }
+
+  .font-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+}
+
+
+/* 09-mobile-nav.css */
+/* ============================================
+   Mobile Bottom Navigation
+   ============================================ */
+
+.mobile-bottom-nav {
+  display: none; /* Hidden on desktop */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, rgba(7, 20, 40, 0.95), rgba(8, 20, 40, 0.98));
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--spacing-sm) var(--spacing-md);
+  z-index: 1000;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.bottom-nav-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  user-select: none;
+  flex: 1;
+  min-width: 0;
+}
+
+.bottom-nav-item:active {
+  transform: scale(0.95);
+  color: var(--primary-color);
+}
+
+.bottom-nav-item.active {
+  color: var(--primary-color);
+}
+
+.bottom-nav-icon {
+  font-size: 1.5rem;
+}
+
+.bottom-nav-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Floating Action Button */
+.fab-container {
+  position: fixed;
+  bottom: 80px;
+  right: var(--spacing-md);
+  z-index: 999;
+  display: none; /* Hidden on desktop */
+}
+
+.fab-button {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fab-button:active {
+  transform: scale(0.9);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.6);
+}
+
+/* Add padding to body when bottom nav is visible */
+body.mobile-nav-active {
+  padding-bottom: 70px;
+}
+
+/* Scroll to top button */
+.scroll-top-btn {
+  position: fixed;
+  bottom: 80px;
+  left: var(--spacing-md);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 999;
+  display: none; /* Hidden on desktop */
+}
+
+.scroll-top-btn.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.scroll-top-btn:active {
+  transform: scale(0.9);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Header -->
+    <div class="header">
+      <div>
+        <div class="title">📚 Packet Module</div>
+        <div class="student-name" id="headerStudentName"></div>
+      </div>
+      <div class="controls">
+        <div class="digital-clock" id="digitalClock">--:--:--</div>
+        <div class="ver">v2.1</div>
+        <button class="btn ghost" id="refreshBtn" onclick="refreshData()" style="display:none" title="Refresh data from Google Sheets">🔄 Refresh</button>
+        <button class="btn ghost" id="installPWABtn" onclick="installPWA()" style="display:none">📱 Install App</button>
+        <button class="btn ghost" id="logoutBtn" onclick="onLogout()" style="display:none">Logout</button>
+      </div>
+    </div>
+
+    <!-- Login Card -->
+    <div class="login-card" id="loginCard">
+      <div class="login-logo">
+        <img src="icons/icon-192.png" alt="Packet Module Logo" class="logo-image">
+      </div>
+      <h2 class="login-title">Student Login</h2>
+      <div class="login-table">
+        <div class="form-group">
+          <label for="groupSelect">Select Your Group/Section</label>
+          <select id="groupSelect" class="form-select">
+            <option value="">-- Select Group --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="nameInput">Search Your Name</label>
+          <div class="autocomplete-wrapper">
+            <input id="nameInput" type="text" placeholder="Type your name..." autocomplete="off" disabled>
+            <div class="autocomplete-dropdown" id="nameDropdown"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="passwordField">Password</label>
+          <input id="passwordField" type="password" placeholder="Enter your password">
+        </div>
+        <button class="btn" id="loginBtn" onclick="onLogin()">Login</button>
+      </div>
+      <div id="authNotice"></div>
+    </div>
+
+    <!-- Progress Table -->
+    <div class="progress-card" id="progressCard">
+      <div class="progress-header">
+        <div>
+          <h2 class="progress-info">Your Progress</h2>
+          <p class="progress-subtitle">MODULE | ACTIVITY | STATUS | SUBMISSION | DATE UPDATED | ACTION</p>
+        </div>
+        <div class="progress-stats">
+          <div class="stat-item">
+            <span class="stat-label">COMPLETED</span>
+            <span class="stat-value" id="statCompleted">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">PENDING</span>
+            <span class="stat-value" id="statPending">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">TOTAL</span>
+            <span class="stat-value" id="statTotal">140</span>
+          </div>
+        </div>
+        <button class="btn ghost" onclick="refreshProgress()">Refresh</button>
+      </div>
+
+      <!-- Desktop Table View -->
+      <div class="table-container">
+        <table class="progress-table">
+          <thead>
+            <tr>
+              <th>MODULE</th>
+              <th>ACTIVITY</th>
+              <th>STATUS</th>
+              <th>SUBMISSION</th>
+              <th>DATE AND TIME</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody id="progressTableBody">
+            <!-- Rows will be populated here -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Cards View -->
+      <div class="progress-cards" id="progressCardsContainer">
+        <!-- Cards will be populated here on mobile -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="mobile-bottom-nav">
+    <div class="bottom-nav-container">
+      <div class="bottom-nav-item active" data-action="home">
+        <div class="bottom-nav-icon">🏠</div>
+        <div class="bottom-nav-label">Home</div>
+      </div>
+      <div class="bottom-nav-item" data-action="progress">
+        <div class="bottom-nav-icon">📊</div>
+        <div class="bottom-nav-label">Progress</div>
+      </div>
+      <div class="bottom-nav-item" data-action="stats">
+        <div class="bottom-nav-icon">📈</div>
+        <div class="bottom-nav-label">Stats</div>
+      </div>
+      <div class="bottom-nav-item" data-action="profile">
+        <div class="bottom-nav-icon">👤</div>
+        <div class="bottom-nav-label">Profile</div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Scroll to Top Button -->
+  <button class="scroll-top-btn" aria-label="Scroll to top">
+    ↑
+  </button>
+
+  <script>
+// config.js
+/**
+ * ============================================
+ * APPLICATION CONFIGURATION
+ * ============================================
+ * 
+ * All constants and configuration values
+ */
+
+// API Configuration
+// ⚠️ IMPORTANT: Replace with your actual Google Apps Script Web App URL
+const API_URL = 'https://script.google.com/macros/s/AKfycbwLjZO8aL5LbTPSBqws4CmIwzdVFFW1BIXoiVX4DX-2UemMAAI-iTHxrKtsLxc5PbrF/exec';
+
+// Application Constants
+const MAX_WORDS = 1000;
+const DEFAULT_FONT_PX = 18;
+const FONT_STORAGE_KEY = 'packet_modal_font_size';
+const CLOCK_UPDATE_INTERVAL = 1000; // milliseconds
+
+// Timezone Configuration
+const TIMEZONE = 'Asia/Manila';
+
+// Group/Section Configuration
+// Add or remove groups as needed
+const AVAILABLE_GROUPS = [
+  { code: '293', label: '293' },
+  { code: '370', label: '370' },
+  { code: '384', label: '384' },
+  { code: '385', label: '385' },
+  { code: 'SSP', label: 'SSP' }
+];
+
+
+// api.js
+/**
+ * ============================================
+ * API COMMUNICATION LAYER
+ * ============================================
+ * 
+ * Handles all communication with Google Apps Script backend
+ */
+
+/**
+ * Make POST API call to backend
+ * @param {string} action - Action to perform
+ * @param {object} params - Parameters to send
+ * @returns {Promise} Response data
+ */
+async function callAPI(action, params = {}) {
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: action,
+        ...params
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('API call failed:', error);
+    
+    // Provide detailed error information
+    if (error.message.includes('Failed to fetch')) {
+      throw new Error('Cannot connect to server. Please check:\n1. Apps Script deployment is active\n2. Deployment access is set to "Anyone"\n3. You have internet connection');
+    }
+    throw error;
+  }
+}
+
+/**
+ * Make GET API call to backend
+ * @param {string} action - Action to perform
+ * @returns {Promise} Response data
+ */
+async function callAPIGet(action, params = {}) {
+  try {
+    const queryParams = new URLSearchParams({ action, ...params });
+    const response = await fetch(`${API_URL}?${queryParams.toString()}`, {
+      method: 'GET'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('API call failed:', error);
+    
+    // Provide detailed error information
+    if (error.message.includes('Failed to fetch')) {
+      throw new Error('Cannot connect to server. Please check:\n1. Apps Script deployment is active\n2. Deployment access is set to "Anyone"\n3. You have internet connection');
+    }
+    throw error;
+  }
+}
+
+
+// utils.js
+/**
+ * ============================================
+ * UTILITY FUNCTIONS
+ * ============================================
+ * 
+ * Helper functions for word counting, validation, etc.
+ */
+
+/**
+ * Count words in text
+ * @param {string} text - Text to count
+ * @returns {number} Word count
+ */
+function countWords(text) {
+  if (!text) return 0;
+  const matches = text.trim().split(/\s+/).filter(Boolean);
+  return matches.length;
+}
+
+/**
+ * Enforce word limit on value and return truncated text
+ * @param {string} val - Text value
+ * @returns {string} Truncated text
+ */
+function enforceWordLimitOnValue(val) {
+  if (!val) return '';
+  const words = val.trim().split(/\s+/).filter(Boolean);
+  if (words.length > MAX_WORDS) {
+    return words.slice(0, MAX_WORDS).join(' ');
+  }
+  return val;
+}
+
+/**
+ * Enforce word limit on textarea element
+ * @param {HTMLTextAreaElement} textarea - Textarea element
+ */
+function enforceWordLimit(textarea) {
+  const val = textarea.value || '';
+  const words = val.trim().split(/\s+/).filter(Boolean);
+  if (words.length > MAX_WORDS) {
+    textarea.value = words.slice(0, MAX_WORDS).join(' ');
+  }
+}
+
+/**
+ * Get persisted font size from localStorage
+ * @returns {number} Font size in pixels
+ */
+function getPersistedFontSize() {
+  try {
+    const v = localStorage.getItem(FONT_STORAGE_KEY);
+    const n = parseInt(v, 10);
+    if (!isNaN(n) && n >= 12 && n <= 40) return n;
+  } catch (e) {
+    console.warn('Cannot access localStorage:', e);
+  }
+  return DEFAULT_FONT_PX;
+}
+
+/**
+ * Persist font size to localStorage
+ * @param {number} px - Font size in pixels
+ */
+function setPersistedFontSize(px) {
+  try {
+    localStorage.setItem(FONT_STORAGE_KEY, String(px));
+  } catch (e) {
+    console.warn('Cannot save to localStorage:', e);
+  }
+}
+
+/**
+ * Show notification message
+ * @param {string} message - Message to display
+ * @param {string} type - Type of notice ('success' or 'error')
+ */
+function showNotice(message, type) {
+  const notice = document.getElementById('authNotice');
+  notice.className = 'notice ' + type;
+  
+  // Preserve line breaks in error messages
+  notice.style.whiteSpace = 'pre-wrap';
+  notice.style.textAlign = 'left';
+  notice.style.fontSize = '0.7rem';
+  notice.textContent = message;
+  
+  // Don't auto-hide error messages that are long/important
+  if (type === 'error' && message.length > 100) {
+    // Keep error visible longer for debugging
+    setTimeout(() => {
+      notice.textContent = '';
+      notice.className = 'notice';
+    }, 15000);
+  } else {
+    setTimeout(() => {
+      notice.textContent = '';
+      notice.className = 'notice';
+    }, 5000);
+  }
+}
+
+/**
+ * Generic error handler
+ * @param {Error} error - Error object
+ */
+function onError(error) {
+  console.error(error);
+  showNotice('An error occurred. Please try again.', 'error');
+  
+  const btn = document.getElementById('loginBtn');
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = 'Login';
+  }
+}
+
+
+// clock.js
+/**
+ * ============================================
+ * CLOCK FUNCTIONALITY
+ * ============================================
+ * 
+ * Manages the digital clock display
+ */
+
+let clockInterval = null;
+let bootstrapDate = null;
+
+/**
+ * Start clock from server time (Philippines timezone)
+ * @param {object} result - Server time response
+ */
+function startClockFromServer(result) {
+  const el = document.getElementById('digitalClock');
+  
+  if (!result || !result.success || !result.data) {
+    startClockLocal();
+    return;
+  }
+
+  const d = result.data;
+  const iso = `${d.year}-${String(d.month).padStart(2,'0')}-${String(d.day).padStart(2,'0')}T${String(d.hour).padStart(2,'0')}:${String(d.minute).padStart(2,'0')}:${String(d.seconds).padStart(2,'0')}+08:00`;
+  bootstrapDate = new Date(iso);
+
+  if (clockInterval) clearInterval(clockInterval);
+
+  function tick() {
+    bootstrapDate = new Date(bootstrapDate.getTime() + 1000);
+    const h = String(bootstrapDate.getHours()).padStart(2, '0');
+    const m = String(bootstrapDate.getMinutes()).padStart(2, '0');
+    const s = String(bootstrapDate.getSeconds()).padStart(2, '0');
+    el.textContent = h + ':' + m + ':' + s;
+  }
+
+  tick();
+  clockInterval = setInterval(tick, CLOCK_UPDATE_INTERVAL);
+}
+
+/**
+ * Start clock using local system time (fallback)
+ */
+function startClockLocal() {
+  const el = document.getElementById('digitalClock');
+  
+  if (clockInterval) clearInterval(clockInterval);
+  
+  function tickLocal() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const s = String(now.getSeconds()).padStart(2,'0');
+    el.textContent = h + ':' + m + ':' + s;
+  }
+  
+  tickLocal();
+  clockInterval = setInterval(tickLocal, CLOCK_UPDATE_INTERVAL);
+}
+
+
+// auth.js
+/**
+ * ============================================
+ * AUTHENTICATION FUNCTIONS
+ * ============================================
+ * 
+ * Handles login, logout, and session management
+ */
+
+let currentUser = null;
+let currentPassword = '';
+let currentUserName = ''; // Store current user's name for refresh
+let currentGroup = ''; // Store selected group
+let allNames = []; // Store all names for autocomplete
+let selectedName = ''; // Store selected name
+let activeIndex = -1; // Track active suggestion
+
+/**
+ * Initialize group selector dropdown
+ */
+function initGroupSelector() {
+  const groupSelect = document.getElementById('groupSelect');
+  const nameInput = document.getElementById('nameInput');
+
+  // Populate group options
+  AVAILABLE_GROUPS.forEach(group => {
+    const option = document.createElement('option');
+    option.value = group.code;
+    option.textContent = group.label;
+    groupSelect.appendChild(option);
+  });
+
+  // Add change event listener
+  groupSelect.addEventListener('change', function() {
+    const selectedGroup = this.value;
+
+    if (selectedGroup) {
+      currentGroup = selectedGroup;
+      nameInput.disabled = false;
+      nameInput.placeholder = 'Type your name...';
+      // Load names for selected group
+      loadNames(selectedGroup);
+    } else {
+      currentGroup = '';
+      nameInput.disabled = true;
+      nameInput.value = '';
+      nameInput.placeholder = 'Select group first';
+      allNames = [];
+      const dropdown = document.getElementById('nameDropdown');
+      dropdown.classList.remove('show');
+    }
+  });
+}
+
+/**
+ * Load student names from server
+ */
+async function loadNames(group) {
+  try {
+    const names = await callAPIGet('getNames', { group });
+    onNamesLoaded(names);
+  } catch (error) {
+    const input = document.getElementById('nameInput');
+    input.placeholder = 'Error loading names - check deployment';
+    showNotice('Cannot load student names. Apps Script deployment may not be accessible. Error: ' + error.message, 'error');
+    console.error('Load names error:', error);
+  }
+}
+
+/**
+ * Initialize autocomplete with names
+ * @param {Array} names - Array of {name, row} objects
+ */
+function onNamesLoaded(names) {
+  allNames = names || [];
+  const input = document.getElementById('nameInput');
+  input.placeholder = 'Type your name...';
+  
+  // Set up autocomplete event listeners
+  initAutocomplete();
+}
+
+/**
+ * Initialize autocomplete functionality
+ */
+function initAutocomplete() {
+  const input = document.getElementById('nameInput');
+  const dropdown = document.getElementById('nameDropdown');
+  
+  // Input event - filter as user types
+  input.addEventListener('input', function() {
+    const query = this.value.trim();
+    selectedName = ''; // Reset selection when typing
+    activeIndex = -1;
+    
+    if (query.length === 0) {
+      dropdown.classList.remove('show');
+      return;
+    }
+    
+    filterAndShowSuggestions(query);
+  });
+  
+  // Focus event - show all names if input is empty
+  input.addEventListener('focus', function() {
+    if (this.value.trim().length === 0) {
+      showAllSuggestions();
+    }
+  });
+  
+  // Keyboard navigation
+  input.addEventListener('keydown', function(e) {
+    const items = dropdown.querySelectorAll('.autocomplete-item');
+    
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIndex = Math.min(activeIndex + 1, items.length - 1);
+      updateActiveItem(items);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIndex = Math.max(activeIndex - 1, -1);
+      updateActiveItem(items);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (activeIndex >= 0 && items[activeIndex]) {
+        selectName(items[activeIndex].textContent);
+      }
+    } else if (e.key === 'Escape') {
+      dropdown.classList.remove('show');
+    }
+  });
+  
+  // Click outside to close
+  document.addEventListener('click', function(e) {
+    if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.remove('show');
+    }
+  });
+}
+
+/**
+ * Filter and show name suggestions
+ */
+function filterAndShowSuggestions(query) {
+  const dropdown = document.getElementById('nameDropdown');
+  const lowerQuery = query.toLowerCase();
+  
+  const matches = allNames.filter(item => 
+    item.name.toLowerCase().includes(lowerQuery)
+  );
+  
+  if (matches.length === 0) {
+    dropdown.innerHTML = '<div class="autocomplete-no-results">No names found</div>';
+    dropdown.classList.add('show');
+    return;
+  }
+  
+  dropdown.innerHTML = '';
+  matches.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'autocomplete-item';
+    div.textContent = item.name;
+    div.dataset.row = item.row;
+    
+    // Highlight matching text
+    const regex = new RegExp(`(${query})`, 'gi');
+    div.innerHTML = item.name.replace(regex, '<span class="autocomplete-highlight">$1</span>');
+    
+    div.addEventListener('click', function() {
+      selectName(item.name);
+    });
+    
+    dropdown.appendChild(div);
+  });
+  
+  dropdown.classList.add('show');
+  activeIndex = -1;
+}
+
+/**
+ * Show all available names
+ */
+function showAllSuggestions() {
+  const dropdown = document.getElementById('nameDropdown');
+  dropdown.innerHTML = '';
+  
+  allNames.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'autocomplete-item';
+    div.textContent = item.name;
+    div.dataset.row = item.row;
+    
+    div.addEventListener('click', function() {
+      selectName(item.name);
+    });
+    
+    dropdown.appendChild(div);
+  });
+  
+  dropdown.classList.add('show');
+}
+
+/**
+ * Update active/highlighted item in dropdown
+ */
+function updateActiveItem(items) {
+  items.forEach((item, index) => {
+    if (index === activeIndex) {
+      item.classList.add('active');
+      item.scrollIntoView({ block: 'nearest' });
+    } else {
+      item.classList.remove('active');
+    }
+  });
+}
+
+/**
+ * Select a name from suggestions
+ */
+function selectName(name) {
+  const input = document.getElementById('nameInput');
+  const dropdown = document.getElementById('nameDropdown');
+  
+  input.value = name;
+  selectedName = name;
+  dropdown.classList.remove('show');
+  
+  // Focus password field
+  document.getElementById('passwordField').focus();
+}
+
+/**
+ * Handle login button click
+ */
+async function onLogin() {
+  const name = selectedName || document.getElementById('nameInput').value.trim();
+  const password = document.getElementById('passwordField').value;
+
+  if (!currentGroup) {
+    showNotice('Please select your group/section first', 'error');
+    return;
+  }
+
+  if (!name || !password) {
+    showNotice('Please enter your name and password', 'error');
+    return;
+  }
+
+  // Verify name exists in list
+  const nameExists = allNames.some(item => item.name === name);
+  if (!nameExists) {
+    showNotice('Name not found. Please select from suggestions.', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+  btn.textContent = 'Logging in...';
+
+  try {
+    const response = await callAPI('getUserData', { name, password, group: currentGroup });
+    onLoginSuccess(response);
+  } catch (error) {
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.textContent = 'Login';
+    
+    let errorMsg = 'Login failed: ';
+    if (error.message.includes('Cannot connect to server')) {
+      errorMsg += 'Cannot access Apps Script backend. Please verify:\n\n' +
+                 '1. Apps Script Web App is deployed\n' +
+                 '2. Access is set to "Anyone" (not "Only myself")\n' +
+                 '3. Current URL: ' + API_URL;
+    } else {
+      errorMsg += error.message || 'Unknown error';
+    }
+    
+    showNotice(errorMsg, 'error');
+    console.error('Login error:', error);
+    document.getElementById('passwordField').value = '';
+  }
+}
+
+/**
+ * Handle successful login
+ * @param {object} response - Login response from server
+ */
+function onLoginSuccess(response) {
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = false;
+  btn.classList.remove('loading');
+  btn.textContent = 'Login';
+
+  if (!response || !response.success) {
+    showNotice(response && response.message ? response.message : 'Invalid credentials', 'error');
+    document.getElementById('passwordField').value = '';
+    return;
+  }
+
+  currentUser = response;
+  currentPassword = document.getElementById('passwordField').value;
+  currentUserName = currentUser.name; // Store name for refresh
+  
+  showProgressView();
+  renderProgressTable();
+  showNotice('Login successful', 'success');
+}
+
+/**
+ * Show progress view and hide login card
+ */
+function showProgressView() {
+  document.getElementById('loginCard').style.display = 'none';
+  document.getElementById('progressCard').classList.add('active');
+  document.getElementById('logoutBtn').style.display = 'inline-block';
+  document.getElementById('refreshBtn').style.display = 'inline-block';
+  document.getElementById('headerStudentName').textContent = currentUser.name;
+}
+
+/**
+ * Handle logout
+ */
+function onLogout() {
+  currentUser = null;
+  currentPassword = '';
+  currentUserName = '';
+  document.getElementById('loginCard').style.display = 'block';
+  document.getElementById('progressCard').classList.remove('active');
+  document.getElementById('logoutBtn').style.display = 'none';
+  document.getElementById('refreshBtn').style.display = 'none';
+  document.getElementById('passwordField').value = '';
+  document.getElementById('headerStudentName').textContent = '';
+  document.getElementById('authNotice').innerHTML = '';
+}
+
+/**
+ * Refresh progress data from server
+ * Re-fetches current user's data from Google Sheets
+ */
+async function refreshProgress() {
+  if (!currentUser) return;
+  
+  const refreshBtn = document.getElementById('refreshBtn');
+  const originalText = refreshBtn ? refreshBtn.textContent : '';
+  
+  try {
+    // Show loading state
+    if (refreshBtn) {
+      refreshBtn.disabled = true;
+      refreshBtn.classList.add('loading');
+      refreshBtn.textContent = '🔄 Refreshing...';
+    }
+    
+    const response = await callAPI('getUserData', {
+      name: currentUser.name,
+      password: currentPassword,
+      group: currentGroup
+    });
+    
+    if (response && response.success) {
+      currentUser = response;
+      renderProgressTable();
+      showNotice('✅ Data refreshed successfully!', 'success');
+    } else {
+      showNotice('Failed to refresh: ' + (response.message || 'Unknown error'), 'error');
+    }
+  } catch (error) {
+    console.error('Refresh error:', error);
+    showNotice('Error refreshing data: ' + error.message, 'error');
+  } finally {
+    // Restore button state
+    if (refreshBtn) {
+      refreshBtn.disabled = false;
+      refreshBtn.classList.remove('loading');
+      refreshBtn.textContent = originalText;
+    }
+  }
+}
+
+/**
+ * Alias for global access
+ */
+function refreshData() {
+  return refreshProgress();
+}
+
+
+// modal.js
+/**
+ * ============================================
+ * MODAL EDITOR FUNCTIONS
+ * ============================================
+ * 
+ * Fullscreen modal editor with font size controls
+ */
+
+/**
+ * Create modal DOM structure
+ * @returns {object} Modal DOM elements
+ */
+function createModal() {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.tabIndex = 0;
+
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+
+  const header = document.createElement('div');
+  header.className = 'modal-header';
+
+  const title = document.createElement('div');
+  title.className = 'modal-title';
+  title.textContent = 'Edit input';
+
+  const controls = document.createElement('div');
+  controls.className = 'modal-controls';
+
+  const fontControl = document.createElement('div');
+  fontControl.className = 'font-control';
+
+  const minusBtn = document.createElement('button');
+  minusBtn.type = 'button';
+  minusBtn.title = 'Decrease font size';
+  minusBtn.textContent = 'A-';
+
+  const plusBtn = document.createElement('button');
+  plusBtn.type = 'button';
+  plusBtn.title = 'Increase font size';
+  plusBtn.textContent = 'A+';
+
+  const resetBtn = document.createElement('button');
+  resetBtn.type = 'button';
+  resetBtn.title = 'Reset font size';
+  resetBtn.textContent = 'Reset';
+
+  const range = document.createElement('input');
+  range.type = 'range';
+  range.min = 12;
+  range.max = 40;
+  range.step = 1;
+
+  const label = document.createElement('div');
+  label.className = 'font-size-label';
+  label.textContent = (getPersistedFontSize() || DEFAULT_FONT_PX) + ' px';
+
+  fontControl.appendChild(minusBtn);
+  fontControl.appendChild(range);
+  fontControl.appendChild(plusBtn);
+  fontControl.appendChild(label);
+  fontControl.appendChild(resetBtn);
+
+  // Create Save/Cancel buttons container
+  const btns = document.createElement('div');
+  btns.style.display = 'flex';
+  btns.style.gap = '8px';
+
+  // Check if mobile view (768px or less)
+  const isMobile = window.innerWidth <= 768;
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'modal-save';
+  saveBtn.textContent = 'Save';
+
+  const cancelBtn = document.createElement('button');
+  cancelBtn.className = 'modal-cancel';
+  cancelBtn.textContent = 'Cancel';
+
+  const doneBtn = document.createElement('button');
+  doneBtn.className = 'modal-done';
+  doneBtn.textContent = 'MARK AS DONE';
+  doneBtn.title = 'Save and mark activity as completed';
+
+  // Mobile: Only Cancel + Mark as Done (no Save)
+  // Desktop: All 3 buttons (Save + Cancel + Mark as Done)
+  if (!isMobile) {
+    btns.appendChild(saveBtn);
+  }
+  btns.appendChild(cancelBtn);
+  btns.appendChild(doneBtn);
+
+  controls.appendChild(fontControl);
+  controls.appendChild(btns); // Add buttons to header controls
+  header.appendChild(title);
+  header.appendChild(controls);
+
+  const textarea = document.createElement('textarea');
+  textarea.className = 'modal-textarea';
+  textarea.placeholder = 'Type your response here (max ' + MAX_WORDS + ' words)';
+
+  const footer = document.createElement('div');
+  footer.className = 'modal-footer';
+
+  const wc = document.createElement('div');
+  wc.className = 'word-count';
+  wc.style.color = '#cbd5e1';
+  wc.textContent = '0 / ' + MAX_WORDS + ' words';
+
+  footer.appendChild(wc);
+  // Buttons removed from footer - now in header
+
+  modal.appendChild(header);
+  modal.appendChild(textarea);
+  modal.appendChild(footer);
+  overlay.appendChild(modal);
+
+  // Initialize font size
+  const persisted = getPersistedFontSize();
+  range.value = persisted;
+  label.textContent = persisted + ' px';
+  textarea.style.fontSize = persisted + 'px';
+
+  // Wire font controls
+  minusBtn.addEventListener('click', () => {
+    let v = parseInt(range.value, 10) - 1;
+    if (v < parseInt(range.min, 10)) v = parseInt(range.min, 10);
+    range.value = v;
+    range.dispatchEvent(new Event('input'));
+  });
+
+  plusBtn.addEventListener('click', () => {
+    let v = parseInt(range.value, 10) + 1;
+    if (v > parseInt(range.max, 10)) v = parseInt(range.max, 10);
+    range.value = v;
+    range.dispatchEvent(new Event('input'));
+  });
+
+  resetBtn.addEventListener('click', () => {
+    range.value = DEFAULT_FONT_PX;
+    range.dispatchEvent(new Event('input'));
+  });
+
+  range.addEventListener('input', () => {
+    const v = parseInt(range.value, 10);
+    textarea.style.fontSize = v + 'px';
+    label.textContent = v + ' px';
+    setPersistedFontSize(v);
+  });
+
+  return {
+    overlay,
+    modal,
+    title,
+    textarea,
+    wc,
+    saveBtn,
+    cancelBtn,
+    doneBtn
+  };
+}
+
+/**
+ * Open modal editor for textarea input
+ * @param {HTMLTextAreaElement} smallTextarea - Original textarea element
+ * @param {string} moduleName - Module name/label
+ * @param {string} activityName - Activity name
+ * @param {number} activityIndex - Activity index
+ * @param {object} activityObj - Activity object
+ */
+function openInputModal(smallTextarea, moduleName, activityName, activityIndex, activityObj) {
+  if (!smallTextarea) return;
+  if (smallTextarea.disabled) return;
+
+  const modalParts = createModal();
+  modalParts.title.textContent = (moduleName || 'Module') + ' — ' + (activityName || 'Activity');
+  modalParts.textarea.value = smallTextarea.value || '';
+  modalParts.textarea.value = enforceWordLimitOnValue(modalParts.textarea.value);
+  modalParts.wc.textContent = countWords(modalParts.textarea.value) + ' / ' + MAX_WORDS + ' words';
+
+  document.body.appendChild(modalParts.overlay);
+
+  const origin = smallTextarea;
+
+  setTimeout(() => {
+    modalParts.textarea.focus();
+    modalParts.textarea.selectionStart = modalParts.textarea.selectionEnd = modalParts.textarea.value.length;
+  }, 50);
+
+  modalParts.textarea.addEventListener('input', () => {
+    enforceWordLimit(modalParts.textarea);
+    modalParts.wc.textContent = countWords(modalParts.textarea.value) + ' / ' + MAX_WORDS + ' words';
+  });
+
+  function closeModal(apply) {
+    if (modalParts.overlay && modalParts.overlay.parentNode) {
+      modalParts.overlay.parentNode.removeChild(modalParts.overlay);
+    }
+    if (apply) {
+      const newVal = modalParts.textarea.value;
+      origin.value = newVal;
+      const wcEl = origin.nextElementSibling;
+      if (wcEl && wcEl.classList && wcEl.classList.contains('word-count')) {
+        wcEl.textContent = countWords(newVal) + ' / ' + MAX_WORDS + ' words';
+      }
+    }
+    try {
+      origin.focus();
+    } catch (e) {}
+  }
+
+  // Only add Save button handler if Save button exists (desktop only)
+  if (modalParts.saveBtn) {
+    modalParts.saveBtn.addEventListener('click', () => {
+      closeModal(true);
+    });
+  }
+
+  modalParts.cancelBtn.addEventListener('click', () => {
+    closeModal(false);
+  });
+
+  // Mark as Done button
+  modalParts.doneBtn.addEventListener('click', async () => {
+    // Check if activity is already completed/locked
+    if (activityObj && (activityObj.status === 'COMPLETED' || activityObj.status === 'LOCKED' || activityObj.status === 'NOT APPLICABLE')) {
+      showNotice('Activity is already ' + activityObj.status, 'error');
+      return;
+    }
+
+    const confirmed = confirm(
+      'Mark this activity as DONE?\n\n' +
+      'This will save your text and mark the activity as COMPLETED.\n' +
+      'Further editing will be disabled.'
+    );
+    
+    if (!confirmed) return;
+
+    // Save the text first
+    const newVal = modalParts.textarea.value;
+    origin.value = newVal;
+    const wcEl = origin.nextElementSibling;
+    if (wcEl && wcEl.classList && wcEl.classList.contains('word-count')) {
+      wcEl.textContent = countWords(newVal) + ' / ' + MAX_WORDS + ' words';
+    }
+
+    // Close modal
+    if (modalParts.overlay && modalParts.overlay.parentNode) {
+      modalParts.overlay.parentNode.removeChild(modalParts.overlay);
+    }
+
+    // Call markAsDone function
+    if (typeof markAsDone === 'function' && activityObj) {
+      await markAsDone(moduleName, activityIndex, activityObj, origin);
+    } else {
+      showNotice('Cannot mark as done: missing data', 'error');
+    }
+  });
+
+  modalParts.overlay.addEventListener('click', (ev) => {
+    if (ev.target === modalParts.overlay) {
+      closeModal(false);
+    }
+  });
+
+  function onKeyDown(ev) {
+    if (ev.key === 'Escape') {
+      ev.preventDefault();
+      closeModal(false);
+      window.removeEventListener('keydown', onKeyDown);
+    } else if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 's') {
+      ev.preventDefault();
+      closeModal(true);
+    }
+  }
+  window.addEventListener('keydown', onKeyDown);
+}
+
+
+// progress.js
+/**
+ * ============================================
+ * PROGRESS TABLE RENDERING
+ * ============================================
+ * 
+ * Renders the student progress table and mobile cards
+ */
+
+/**
+ * Render the complete progress table
+ */
+function renderProgressTable() {
+  if (!currentUser || !currentUser.modules) return;
+
+  const tbody = document.getElementById('progressTableBody');
+  tbody.innerHTML = '';
+
+  let totalCompleted = 0;
+  let totalPending = 0;
+  let totalActivities = 0;
+
+  currentUser.modules.forEach(module => {
+    if (!module || !module.activities) return; // Skip if module is invalid
+    
+    module.activities.forEach((activity, index) => {
+      if (!activity) return; // Skip if activity is invalid
+      
+      totalActivities++;
+      
+      const row = document.createElement('tr');
+      row.setAttribute('data-module', module.module || '');
+      row.setAttribute('data-activity-index', index);
+      row.setAttribute('data-col', activity.col || '');
+
+      // Module cell
+      const moduleCell = document.createElement('td');
+      moduleCell.className = 'module-cell';
+      moduleCell.textContent = module.module || 'Unknown Module';
+      row.appendChild(moduleCell);
+
+      // Activity cell
+      const activityCell = document.createElement('td');
+      activityCell.className = 'activity-cell';
+      activityCell.textContent = activity.name || 'Unknown Activity';
+      row.appendChild(activityCell);
+
+      // Status cell
+      const statusCell = document.createElement('td');
+      const badge = document.createElement('span');
+      badge.className = 'status-badge';
+      
+      const status = (activity.status || '').toUpperCase();
+      let isPending = false;
+      let isLocked = false;
+      let isCompleted = false;
+      let isNotApplicable = false;
+      let isMissing = false;
+      
+      if (status === 'COMPLETED') {
+        badge.className += ' status-done';
+        badge.textContent = 'COMPLETED';
+        totalCompleted++;
+        isCompleted = true;
+      } else if (status === 'MISSING') {
+        badge.className += ' status-missing';
+        badge.textContent = 'MISSING';
+        totalPending++;
+        isMissing = true;
+      } else if (status === 'LOCKED') {
+        badge.className += ' status-locked';
+        badge.textContent = 'LOCKED';
+        isLocked = true;
+      } else if (status === 'NOT APPLICABLE') {
+        badge.className += ' status-na';
+        badge.textContent = 'NOT APPLICABLE';
+        isNotApplicable = true;
+      } else if (status === 'PENDING') {
+        badge.className += ' status-pending';
+        badge.textContent = 'PENDING';
+        totalPending++;
+        isPending = true;
+      } else {
+        // Fallback for any other status
+        badge.className += ' status-empty';
+        badge.textContent = status || 'NOT STARTED';
+        totalPending++;
+      }
+      
+      statusCell.appendChild(badge);
+      row.appendChild(statusCell);
+
+      // Input cell
+      const inputCell = document.createElement('td');
+      const textarea = document.createElement('textarea');
+      textarea.className = 'input-textarea';
+      textarea.maxLength = 100000;
+      textarea.value = activity.inputText || '';
+      textarea.placeholder = 'Enter notes / response (max 1000 words)';
+      textarea.readOnly = true;
+
+      textarea.oninput = function() {
+        enforceWordLimit(this);
+        const wc = countWords(this.value);
+        const wcSpan = this.nextElementSibling;
+        if (wcSpan) wcSpan.textContent = wc + ' / ' + MAX_WORDS + ' words';
+      };
+
+      textarea.addEventListener('click', (e) => {
+        if (textarea.disabled) return;
+        openInputModal(textarea, module.module, activity.name, index, activity);
+        e.stopPropagation();
+      });
+
+      const wc = document.createElement('div');
+      wc.className = 'word-count';
+      wc.textContent = countWords(textarea.value) + ' / ' + MAX_WORDS + ' words';
+
+      if (isCompleted || isLocked || isNotApplicable) {
+        textarea.disabled = true;
+        textarea.title = 'Disabled: activity is ' + badge.textContent;
+      } else {
+        // Allow editing for PENDING, MISSING, and other editable statuses
+        textarea.style.cursor = 'pointer';
+      }
+
+      inputCell.appendChild(textarea);
+      inputCell.appendChild(wc);
+      row.appendChild(inputCell);
+
+      // DateTime cell
+      const datetimeCell = document.createElement('td');
+      datetimeCell.className = 'datetime-cell';
+      
+      if (activity.rawTimestamp && String(activity.rawTimestamp).trim() !== '') {
+        datetimeCell.textContent = activity.rawTimestamp;
+      } else {
+        datetimeCell.textContent = 'PENDING';
+        datetimeCell.classList.add('datetime-pending');
+      }
+      
+      row.appendChild(datetimeCell);
+
+      // Action cell
+      const actionCell = document.createElement('td');
+      const actionBtn = document.createElement('button');
+      actionBtn.className = 'btn-small';
+      
+      if (isCompleted || isLocked || isNotApplicable) {
+        actionBtn.className += ' btn-disabled';
+        actionBtn.disabled = true;
+        if (isCompleted) actionBtn.textContent = 'COMPLETED';
+        else if (isLocked) actionBtn.textContent = 'LOCKED';
+        else if (isNotApplicable) actionBtn.textContent = 'NOT APPLICABLE';
+      } else {
+        // Both MISSING and PENDING show "MARK AS DONE"
+        actionBtn.className += ' btn-action';
+        actionBtn.textContent = 'MARK AS DONE';
+        actionBtn.onclick = () => markAsDone(module.module, index, activity, textarea);
+      }
+      
+      actionCell.appendChild(actionBtn);
+      row.appendChild(actionCell);
+
+      tbody.appendChild(row);
+    });
+  });
+
+  // Update statistics
+  document.getElementById('statCompleted').textContent = totalCompleted;
+  document.getElementById('statPending').textContent = totalPending;
+  document.getElementById('statTotal').textContent = totalActivities;
+  
+  // Render mobile cards
+  const cardData = buildCardData();
+  if (typeof renderProgressCards === 'function') {
+    renderProgressCards(cardData);
+  }
+}
+
+/**
+ * Mark activity as done
+ * @param {string} moduleName - Module name/label
+ * @param {number} activityIndex - Activity index
+ * @param {object} activity - Activity object
+ * @param {HTMLTextAreaElement} textareaEl - Textarea element
+ */
+async function markAsDone(moduleName, activityIndex, activity, textareaEl) {
+  if (!currentUser) return;
+  
+  const confirmed = confirm(
+    'Mark "' + activity.name + '" in ' + moduleName + ' as DONE?\n\n' +
+    'This will update the status to COMPLETED and disable further editing of the input text.'
+  );
+  
+  if (!confirmed) return;
+
+  const row = currentUser.row;
+  const col = activity.col;
+  const inputText = textareaEl ? textareaEl.value : '';
+
+  const tbody = document.getElementById('progressTableBody');
+  const rows = tbody.querySelectorAll('tr');
+  let targetRow = null;
+  
+  // Find desktop row
+  rows.forEach(r => {
+    if (r.getAttribute('data-module') == moduleName && 
+        r.getAttribute('data-activity-index') == activityIndex) {
+      targetRow = r;
+      r.classList.add('updating-row');
+      const btn = r.querySelector('.btn-action');
+      if (btn) {
+        btn.disabled = true;
+        btn.classList.add('loading');
+        btn.textContent = 'Submitting...';
+      }
+    }
+  });
+
+  // Find mobile card
+  const cards = document.querySelectorAll('.progress-card-item');
+  let targetCard = null;
+  cards.forEach(card => {
+    const cardModule = card.querySelector('.card-module')?.textContent || '';
+    const cardActivity = card.querySelector('.card-activity')?.textContent || '';
+    if (cardModule === moduleName && cardActivity === activity.name) {
+      targetCard = card;
+      card.classList.add('card-updating');
+      const btn = card.querySelector('button');
+      if (btn) {
+        btn.disabled = true;
+        btn.classList.add('loading');
+        btn.textContent = 'Submitting...';
+      }
+    }
+  });
+
+  try {
+    const result = await callAPI('updateActivity', {
+      row: row,
+      colLetter: col,
+      newValue: 'DONE',
+      inputText: inputText,
+      group: currentGroup
+    });
+    
+    if (result && result.success) {
+      // Show bouncing checkmark and success flash on desktop
+      if (targetRow) {
+        targetRow.classList.remove('updating-row');
+        
+        // Add bouncing checkmark
+        const successBadge = document.createElement('div');
+        successBadge.className = 'success-badge';
+        successBadge.innerHTML = '<div class="checkmark-circle">✓</div>';
+        targetRow.style.position = 'relative';
+        targetRow.appendChild(successBadge);
+        
+        // Add flash animation
+        targetRow.classList.add('success-flash');
+        
+        // Remove checkmark after animation
+        setTimeout(() => {
+          targetRow.classList.remove('success-flash');
+          successBadge.remove();
+        }, 600);
+      }
+
+      // Show bouncing checkmark and success flash on mobile
+      if (targetCard) {
+        targetCard.classList.remove('card-updating');
+        
+        // Add bouncing checkmark
+        const successBadge = document.createElement('div');
+        successBadge.className = 'success-badge';
+        successBadge.innerHTML = '<div class="checkmark-circle">✓</div>';
+        targetCard.style.position = 'relative';
+        targetCard.appendChild(successBadge);
+        
+        // Add flash animation
+        targetCard.classList.add('success-flash');
+        
+        // Remove checkmark after animation
+        setTimeout(() => {
+          targetCard.classList.remove('success-flash');
+          successBadge.remove();
+        }, 600);
+      }
+      
+      // Auto-refresh to get latest data from Google Sheets (with slight delay)
+      setTimeout(async () => {
+        if (typeof refreshData === 'function') {
+          await refreshData();
+        } else {
+          // Fallback: manual update if refresh not available
+          const mod = currentUser.modules.find(m => m.module === moduleName);
+          if (mod && mod.activities[activityIndex]) {
+            mod.activities[activityIndex].rawValue = 'DONE';
+            mod.activities[activityIndex].rawTimestamp = result.timestamp || new Date().toString();
+            mod.activities[activityIndex].status = 'COMPLETED';
+            mod.activities[activityIndex].inputText = inputText;
+          }
+          renderProgressTable();
+        }
+        showNotice('✓ Activity marked as DONE successfully!', 'success');
+      }, 400);
+    } else {
+      if (targetRow) targetRow.classList.remove('updating-row');
+      if (targetCard) targetCard.classList.remove('card-updating');
+      showNotice(result && result.message ? result.message : 'Failed to update activity', 'error');
+    }
+  } catch (error) {
+    if (targetRow) targetRow.classList.remove('updating-row');
+    if (targetCard) targetCard.classList.remove('card-updating');
+    console.error(error);
+    showNotice('Error updating activity: ' + (error && error.message ? error.message : String(error)), 'error');
+  }
+}
+
+/**
+ * Build card data array from user modules
+ */
+function buildCardData() {
+  if (!currentUser || !currentUser.modules) return [];
+  
+  const data = [];
+  currentUser.modules.forEach(module => {
+    module.activities.forEach((activity, index) => {
+      data.push({
+        Module: module.module || 'Unknown Module',
+        Activity: activity.name,
+        Status: activity.status === 'COMPLETED' ? 'Done' : 'Pending',
+        Submission: activity.inputText || '',
+        Date: activity.rawTimestamp || '',
+        // Keep metadata for Option 2
+        moduleNumber: module.module,
+        activityIndex: index,
+        activityObj: activity
+      });
+    });
+  });
+  
+  return data;
+}
+
+
+// mobile.js
+/**
+ * Mobile-specific UI enhancements
+ * Handles card layout, collapsible sections, and bottom navigation
+ */
+
+// Render progress data as mobile cards
+function renderProgressCards(data) {
+  const cardsContainer = document.getElementById('progressCardsContainer');
+  if (!cardsContainer) return;
+
+  cardsContainer.innerHTML = '';
+
+  data.forEach((row, index) => {
+    const card = document.createElement('div');
+    card.className = 'progress-card-item';
+    card.dataset.rowIndex = index;
+
+    const statusBadge = row.Status === 'Done' 
+      ? '<span class="stat-badge success">✓ Done</span>'
+      : '<span class="stat-badge pending">⏱ Pending</span>';
+
+    const dateTime = row.Date 
+      ? `<div class="card-datetime">📅 ${row.Date}</div>`
+      : '<div class="card-datetime card-datetime-pending">Not submitted yet</div>';
+
+    const submissionText = row.Submission 
+      ? `<div class="card-submission">${row.Submission.substring(0, 80)}${row.Submission.length > 80 ? '...' : ''}</div>`
+      : '<div class="card-submission" style="color: rgba(255,255,255,0.4)">No submission</div>';
+
+    const isDisabled = row.Status === 'Done';
+    const buttonText = isDisabled ? '✓ Submitted' : '📝 Submit';
+
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="card-module">${row.Module}</div>
+        <div class="card-status">${statusBadge}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-activity">${row.Activity}</div>
+        ${submissionText}
+        ${dateTime}
+      </div>
+      <div class="card-footer">
+        <button class="btn-small ${isDisabled ? 'done' : ''}" 
+                data-card-index="${index}"
+                ${isDisabled ? 'disabled' : ''}>
+          ${buttonText}
+        </button>
+      </div>
+    `;
+
+    // Create hidden textarea for this card (needed by openInputModal)
+    const textarea = document.createElement('textarea');
+    textarea.style.display = 'none';
+    textarea.value = row.Submission || '';
+    textarea.className = 'mobile-card-textarea';
+    textarea.dataset.cardIndex = index;
+    card.appendChild(textarea);
+
+    // Add click handler to button
+    const button = card.querySelector('button');
+    if (button && !isDisabled) {
+      button.addEventListener('click', () => {
+        if (row.moduleNumber && row.activityObj) {
+          openInputModal(textarea, row.moduleNumber, row.Activity, row.activityIndex, row.activityObj);
+        }
+      });
+    }
+
+    cardsContainer.appendChild(card);
+  });
+}
+
+// Toggle collapsible sections
+function toggleCollapsible(element) {
+  const content = element.nextElementSibling;
+  const icon = element.querySelector('.collapsible-icon');
+  
+  if (!content || !icon) return;
+
+  const isExpanded = content.classList.contains('expanded');
+  
+  if (isExpanded) {
+    content.classList.remove('expanded');
+    icon.classList.remove('expanded');
+  } else {
+    content.classList.add('expanded');
+    icon.classList.add('expanded');
+  }
+}
+
+// Bottom navigation handling
+function initBottomNavigation() {
+  const navItems = document.querySelectorAll('.bottom-nav-item');
+  
+  navItems.forEach(item => {
+    item.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Remove active class from all items
+      navItems.forEach(nav => nav.classList.remove('active'));
+      
+      // Add active class to clicked item
+      this.classList.add('active');
+      
+      // Handle navigation action
+      const action = this.dataset.action;
+      
+      switch(action) {
+        case 'home':
+          scrollToTop();
+          break;
+        case 'progress':
+          scrollToProgress();
+          break;
+        case 'stats':
+          scrollToStats();
+          break;
+        case 'profile':
+          showProfileInfo();
+          break;
+      }
+    });
+  });
+}
+
+// Scroll to top
+function scrollToTop() {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+}
+
+// Scroll to progress section
+function scrollToProgress() {
+  const progressCard = document.querySelector('.progress-card-item');
+  if (progressCard) {
+    progressCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+// Scroll to stats
+function scrollToStats() {
+  const stats = document.querySelector('.progress-stats');
+  if (stats) {
+    stats.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+// Show profile info
+function showProfileInfo() {
+  const studentName = document.getElementById('headerStudentName').textContent;
+  showNotice(`Logged in as: ${studentName}`, 'info');
+}
+
+// Scroll to top button
+function initScrollTopButton() {
+  const scrollBtn = document.querySelector('.scroll-top-btn');
+  if (!scrollBtn) return;
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+      scrollBtn.classList.add('visible');
+    } else {
+      scrollBtn.classList.remove('visible');
+    }
+  });
+
+  scrollBtn.addEventListener('click', scrollToTop);
+}
+
+// Detect if mobile device
+function isMobileDevice() {
+  return window.innerWidth <= 768;
+}
+
+// Initialize mobile features
+function initMobileFeatures() {
+  if (isMobileDevice()) {
+    document.body.classList.add('mobile-nav-active');
+    initBottomNavigation();
+    initScrollTopButton();
+  }
+}
+
+// Re-render on window resize
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    if (isMobileDevice()) {
+      document.body.classList.add('mobile-nav-active');
+    } else {
+      document.body.classList.remove('mobile-nav-active');
+    }
+  }, 250);
+});
+
+
+// pwa.js
+/**
+ * PWA Installation Handler
+ * Shows manual install button when PWA is installable
+ */
+
+let deferredPrompt = null;
+
+// Listen for beforeinstallprompt event
+window.addEventListener('beforeinstallprompt', (e) => {
+  console.log('[PWA] Install prompt available');
+  e.preventDefault();
+  deferredPrompt = e;
+  
+  // Show install button
+  const installBtn = document.getElementById('installPWABtn');
+  if (installBtn) {
+    installBtn.style.display = 'inline-block';
+  }
+});
+
+// Handle install button click
+function installPWA() {
+  const installBtn = document.getElementById('installPWABtn');
+  
+  if (!deferredPrompt) {
+    showNotice('App is already installed or not installable', 'info');
+    return;
+  }
+  
+  // Show install prompt
+  deferredPrompt.prompt();
+  
+  deferredPrompt.userChoice.then((choiceResult) => {
+    if (choiceResult.outcome === 'accepted') {
+      console.log('[PWA] User accepted install');
+      showNotice('App installed successfully! 🎉', 'success');
+    } else {
+      console.log('[PWA] User dismissed install');
+    }
+    
+    deferredPrompt = null;
+    if (installBtn) {
+      installBtn.style.display = 'none';
+    }
+  });
+}
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js')
+      .then((registration) => {
+        console.log('[PWA] Service Worker registered:', registration.scope);
+      })
+      .catch((err) => {
+        console.error('[PWA] Service Worker registration failed:', err);
+      });
+  });
+}
+
+// Hide install button when app is already installed
+window.addEventListener('appinstalled', () => {
+  console.log('[PWA] App installed');
+  const installBtn = document.getElementById('installPWABtn');
+  if (installBtn) {
+    installBtn.style.display = 'none';
+  }
+  deferredPrompt = null;
+});
+
+
+// main.js
+/**
+ * ============================================
+ * MAIN APPLICATION INITIALIZATION
+ * ============================================
+ * 
+ * Entry point for the application
+ */
+
+document.addEventListener('DOMContentLoaded', async () => {
+  // Initialize group selector
+  initGroupSelector();
+
+  // Initialize clock from server (Philippines time)
+  try {
+    const result = await callAPIGet('getTime');
+    startClockFromServer(result);
+  } catch (error) {
+    console.warn('Failed to get server time, using local time:', error);
+    startClockLocal();
+  }
+  
+  // Initialize mobile features
+  if (typeof initMobileFeatures === 'function') {
+    initMobileFeatures();
+  }
+});
+
+  </script>
+</body>
+</html>

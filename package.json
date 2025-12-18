@@ -1,0 +1,20 @@
+{
+  "name": "packet-module",
+  "version": "1.1.5",
+  "description": "Student activity tracking and submission system",
+  "main": "build/bundle.js",
+  "scripts": {
+    "build": "node build/bundle.js",
+    "watch": "nodemon --watch src --exec 'npm run build'"
+  },
+  "keywords": [
+    "education",
+    "student-portal",
+    "progress-tracking"
+  ],
+  "author": "Packet Module Development Team",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  }
+}

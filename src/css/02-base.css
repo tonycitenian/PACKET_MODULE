@@ -1,0 +1,24 @@
+/* ============================================
+   Base Styles & Typography
+   ============================================ */
+
+html {
+  font-size: var(--font-base-size);
+}
+
+body {
+  margin: 0;
+  padding: 40px;
+  font-family: var(--font-family);
+  background: linear-gradient(180deg, var(--bg-dark-1), var(--bg-dark-2));
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+.wrap {
+  max-width: 1800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}

@@ -1,0 +1,27 @@
+{
+  "name": "Packet Module",
+  "short_name": "Packet",
+  "description": "Student activity tracking and submission system",
+  "start_url": "/PACKET_MODULE/public/login.html",
+  "scope": "/PACKET_MODULE/public/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#4f46e5",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "screenshots": []
+}

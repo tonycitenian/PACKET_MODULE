@@ -1,0 +1,306 @@
+/* ============================================
+   Progress Card & Table Styles
+   ============================================ */
+
+.progress-card {
+  background: var(--bg-overlay);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-2xl);
+  box-shadow: var(--shadow-lg);
+  display: none;
+}
+
+.progress-card.active {
+  display: block;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-2xl);
+  flex-wrap: wrap;
+  gap: var(--spacing-lg);
+}
+
+.progress-stats {
+  display: flex;
+  gap: var(--spacing-2xl);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  margin-bottom: 0.3rem;
+  font-weight: 700;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--text-white);
+}
+
+.progress-info {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--text-white);
+  font-weight: 900;
+}
+
+.progress-subtitle {
+  margin-top: 0.3rem;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.table-container {
+  overflow-x: auto;
+  margin-top: var(--spacing-lg);
+}
+
+.progress-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 var(--spacing-sm);
+}
+
+.progress-table thead th {
+  text-align: left;
+  padding: var(--spacing-md);
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.progress-table tbody tr {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+  transition: all var(--transition-fast);
+}
+
+.progress-table tbody tr:hover {
+  background: linear-gradient(90deg, rgba(79, 70, 229, 0.15), rgba(139, 92, 246, 0.08));
+  transform: translateX(4px);
+}
+
+.progress-table tbody td {
+  padding: var(--spacing-md);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.8rem;
+  vertical-align: top;
+}
+
+.progress-table tbody td:first-child {
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  border-top-left-radius: var(--radius-md);
+  border-bottom-left-radius: var(--radius-md);
+}
+
+.progress-table tbody td:last-child {
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-top-right-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+  text-align: center;
+}
+
+.module-cell {
+  font-weight: 900;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.activity-cell {
+  font-weight: 700;
+  color: var(--text-white);
+  font-size: 0.8rem;
+}
+
+.datetime-cell {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.datetime-pending {
+  color: var(--text-ultra-muted);
+  font-style: italic;
+}
+
+.updating-row {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.input-textarea {
+  width: 100%;
+  min-height: 84px;
+  max-height: 200px;
+  padding: 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-overlay);
+  color: var(--text-white);
+  resize: vertical;
+  box-sizing: border-box;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.word-count {
+  margin-top: 0.25rem;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-align: right;
+}
+
+/* ============================================
+   Mobile Card Layout (hidden by default)
+   ============================================ */
+
+.progress-cards {
+  display: none; /* Hidden on desktop, shown on mobile */
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.progress-card-item {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  transition: all var(--transition-fast);
+}
+
+.progress-card-item:active {
+  transform: scale(0.98);
+  background: linear-gradient(180deg, rgba(79, 70, 229, 0.15), rgba(139, 92, 246, 0.08));
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-module {
+  font-weight: 900;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.card-status {
+  display: inline-block;
+}
+
+.card-body {
+  margin-bottom: var(--spacing-sm);
+}
+
+.card-activity {
+  font-weight: 700;
+  color: var(--text-white);
+  font-size: 0.95rem;
+  margin-bottom: var(--spacing-xs);
+  line-height: 1.4;
+}
+
+.card-submission {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin-bottom: var(--spacing-xs);
+}
+
+.card-datetime {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.card-datetime-pending {
+  color: var(--text-ultra-muted);
+  font-style: italic;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.card-updating {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Collapsible Section */
+.collapsible-section {
+  margin-bottom: var(--spacing-md);
+}
+
+.collapsible-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--transition-fast);
+}
+
+.collapsible-header:active {
+  background: rgba(79, 70, 229, 0.1);
+  transform: scale(0.98);
+}
+
+.collapsible-title {
+  font-weight: 800;
+  color: var(--text-white);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.collapsible-icon {
+  font-size: 1.2rem;
+  transition: transform var(--transition-fast);
+  color: var(--text-secondary);
+}
+
+.collapsible-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.collapsible-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.collapsible-content.expanded {
+  max-height: 5000px;
+  transition: max-height 0.5s ease-in;
+}
+
+.collapsible-inner {
+  padding-top: var(--spacing-md);
+}
+

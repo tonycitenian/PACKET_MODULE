@@ -1,0 +1,150 @@
+/* ============================================
+   Modal Editor Styles (Fullscreen)
+   ============================================ */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.75);
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  z-index: var(--z-modal);
+  padding: 0;
+  backdrop-filter: blur(6px);
+}
+
+.modal {
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+  border-radius: 0;
+  padding: 20px;
+  box-shadow: none;
+  color: var(--text-white);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: 8px 4px;
+}
+
+.modal-title {
+  font-weight: 900;
+  font-size: 1.1rem;
+  color: var(--text-white);
+}
+
+.modal-controls {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+/* Font Control UI */
+.font-control {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+  color: #cbd5e1;
+  font-weight: 700;
+  background: var(--bg-overlay);
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.font-control button {
+  background: transparent;
+  color: var(--text-white);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.font-control input[type="range"] {
+  width: 160px;
+  accent-color: #7c3aed;
+}
+
+.font-size-label {
+  min-width: 44px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.modal-textarea {
+  width: 100%;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text-white);
+  font-size: 18px;
+  resize: none;
+  box-sizing: border-box;
+  font-family: inherit;
+  flex: 1 1 auto;
+  overflow: auto;
+  line-height: 1.4;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0;
+  gap: 12px;
+  padding: 8px 4px;
+  flex-wrap: wrap;
+}
+
+.modal-save {
+  background: linear-gradient(90deg, var(--success-color), var(--success-dark));
+  color: var(--text-white);
+  padding: 1.6rem 2.4rem;
+  border-radius: var(--radius-sm);
+  font-weight: 800;
+  font-size: 1.1rem;
+  border: none;
+  cursor: pointer;
+}
+
+.modal-cancel {
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  padding: 1.2rem 2rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-white);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.modal-done {
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  color: var(--text-white);
+  padding: 1.6rem 2.4rem;
+  border-radius: var(--radius-sm);
+  font-weight: 800;
+  font-size: 1.1rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+  transition: all var(--transition-fast);
+}
+
+.modal-done:hover {
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.5);
+  transform: translateY(-1px);
+}
+
+.modal-done:active {
+  transform: scale(0.98);
+}

@@ -1,0 +1,266 @@
+/* ============================================
+   Responsive Media Queries
+   ============================================ */
+
+/* Tablet (1024px and below) */
+@media (max-width: 1024px) {
+  html {
+    font-size: 20px;
+  }
+
+  body {
+    padding: 20px;
+  }
+
+  .login-card {
+    padding: var(--spacing-xl);
+  }
+
+  .login-title {
+    font-size: 32px;
+  }
+
+  .digital-clock {
+    min-width: 200px;
+    height: 56px;
+    line-height: 56px;
+    font-size: 22px;
+  }
+}
+
+/* Mobile (768px and below) */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px; /* Reduced from 16px */
+  }
+
+  body {
+    padding: 10px; /* Reduced from 15px */
+  }
+
+  /* Header Layout */
+  .header {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+  }
+
+  .title {
+    font-size: 1.4rem; /* Smaller title */
+  }
+
+  .student-name {
+    font-size: 0.9rem;
+  }
+
+  /* Controls - Stack vertically */
+  .controls {
+    width: 100%;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .digital-clock {
+    width: 100%;
+    min-width: auto;
+    height: 48px;
+    line-height: 48px;
+    font-size: 1.4rem;
+  }
+
+  .ver {
+    font-size: 0.7rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  /* Buttons - Full width on mobile */
+  .controls .btn {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.9rem;
+  }
+
+  /* Login Card */
+  .login-card {
+    padding: var(--spacing-lg);
+  }
+
+  .login-title {
+    font-size: 1.6rem; /* Reduced from 28px */
+  }
+
+  .form-group {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .form-group label {
+    font-size: 0.9rem;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  select,
+  input[type="password"] {
+    font-size: 1rem;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .btn {
+    font-size: 1rem;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  /* Progress Section */
+  .progress-card {
+    padding: var(--spacing-md);
+  }
+
+  .progress-header {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .progress-info {
+    font-size: 1.3rem;
+  }
+
+  .progress-subtitle {
+    font-size: 0.75rem;
+  }
+
+  .progress-stats {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    width: 100%;
+  }
+
+  .stat-badge {
+    font-size: 0.85rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  /* Mobile: Hide table, show cards */
+  .table-container {
+    display: none; /* Hide table on mobile */
+  }
+
+  .progress-cards {
+    display: flex; /* Show cards on mobile */
+  }
+
+  /* Mobile Bottom Navigation */
+  .mobile-bottom-nav {
+    display: block;
+  }
+
+  .fab-container,
+  .scroll-top-btn {
+    display: flex;
+  }
+
+  /* Add bottom padding for fixed nav */
+  body {
+    padding-bottom: 70px;
+  }
+
+  .wrap {
+    padding-bottom: var(--spacing-lg);
+  }
+
+  /* Touch-optimized buttons */
+  .btn-small {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+    min-height: 44px; /* iOS recommended touch target */
+  }
+
+  /* Modal Editor */
+  .modal-header h3 {
+    font-size: 1.2rem;
+  }
+
+  .font-controls {
+    gap: var(--spacing-sm);
+  }
+
+  .font-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .modal-content textarea {
+    font-size: 1rem;
+    padding: var(--spacing-md);
+  }
+
+  .modal-footer .btn {
+    font-size: 0.9rem;
+    padding: var(--spacing-sm) var(--spacing-lg);
+  }
+
+  /* Notice messages */
+  .notice {
+    font-size: 0.9rem;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+}
+
+/* Small Mobile (480px and below) */
+@media (max-width: 480px) {
+  html {
+    font-size: 13px; /* Even smaller for tiny screens */
+  }
+
+  body {
+    padding: 8px;
+  }
+
+  .header {
+    padding: var(--spacing-sm);
+  }
+
+  .title {
+    font-size: 1.2rem;
+  }
+
+  .controls {
+    gap: 6px;
+  }
+
+  .digital-clock {
+    height: 42px;
+    line-height: 42px;
+    font-size: 1.2rem;
+  }
+
+  .login-card,
+  .progress-card {
+    padding: var(--spacing-md);
+  }
+
+  .login-title {
+    font-size: 1.4rem;
+  }
+
+  .progress-info {
+    font-size: 1.1rem;
+  }
+
+  .progress-subtitle {
+    font-size: 0.7rem;
+  }
+
+  .btn {
+    padding: 0.4rem 0.8rem;
+  }
+
+  .modal-header h3 {
+    font-size: 1rem;
+  }
+
+  .font-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+}
